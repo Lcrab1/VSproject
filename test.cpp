@@ -4,6 +4,7 @@ using namespace std;
 
 int main(){
 
+    cout<<"change test"<<endl;
     cout<<"hello world"<<endl;
     int a,b;
     cin>>a>>b;
