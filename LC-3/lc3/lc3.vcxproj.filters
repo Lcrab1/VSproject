@@ -15,30 +15,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="lc3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="opcode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="memory.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="register.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="instruction.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="instruction.h">
+    <ClInclude Include="opcode.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="main.h">
+    <ClInclude Include="lc3.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="memory.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="register.h">
+    <ClInclude Include="test.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
