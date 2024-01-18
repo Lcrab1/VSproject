@@ -5,6 +5,7 @@
 #pragma once
 
 
+
 // CCrabRemoteServerDlg 对话框
 class CCrabRemoteServerDlg : public CDialogEx
 {
@@ -34,4 +35,7 @@ protected:
 public:
 	CListCtrl m_ClientInfoList;
 	CListCtrl m_ServerInfoList;
+
+	void initListCtrl();
+	
 };

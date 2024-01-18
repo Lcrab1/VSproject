@@ -12,6 +12,34 @@
 #define new DEBUG_NEW
 #endif
 
+/*****定义我的列表数据结构体*****/
+typedef struct
+{
+	char*	TitleData;             //列表的名称
+	int		TitleWidth;            //列表的宽度
+}COLUMN_DATA;
+
+/*****Client表头*****/
+COLUMN_DATA __ClientInfoList[] =
+{
+	{ "IP",			    120 },
+	{ "Region",			60 },
+	{ "Computer name / Note",	200 },
+	{ "OS",		128 },
+	{ "CPU",			    180 },
+	{ "Camera",		    81 },
+	{ "Ping",			151 }
+};
+
+/*****Server表头*****/
+COLUMN_DATA __ServerInfoList[] =
+{
+	{ "Type",		200 },
+	{ "Time",			200 },
+	{ "Cotent",	    550 }
+};
+
+
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -104,6 +132,10 @@ BOOL CCrabRemoteServerDlg::OnInitDialog()
 
 	// TODO: 在此添加额外的初始化代码
 
+	/*****初始化主窗口*****/
+	initListCtrl();
+
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -154,5 +186,21 @@ void CCrabRemoteServerDlg::OnPaint()
 HCURSOR CCrabRemoteServerDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
+}
+
+void CCrabRemoteServerDlg::initListCtrl()
+{
+	for (int i = 0; i < sizeof(__ClientInfoList) / sizeof(COLUMN_DATA); i++)
+	{
+		m_ClientInfoList.InsertColumn(i, __ClientInfoList[i].TitleData,
+			LVCFMT_CENTER, __ClientInfoList[i].TitleWidth);
+	}
+	m_ClientInfoList.SetExtendedStyle(LVS_EX_FULLROWSELECT);
+	for (int i = 0; i < sizeof(__ServerInfoList) / sizeof(COLUMN_DATA); i++)
+	{
+		m_ServerInfoList.InsertColumn(i, __ServerInfoList[i].TitleData, LVCFMT_CENTER,
+			__ServerInfoList[i].TitleWidth);
+	}
+	m_ServerInfoList.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 }
 
