@@ -38,4 +38,6 @@ public:
 
 	void initListCtrl();
 	
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	void getLocalTime();
 };

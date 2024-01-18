@@ -96,6 +96,7 @@ BEGIN_MESSAGE_MAP(CCrabRemoteServerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -132,8 +133,14 @@ BOOL CCrabRemoteServerDlg::OnInitDialog()
 
 	// TODO: 在此添加额外的初始化代码
 
-	/*****初始化主窗口*****/
-	initListCtrl();
+
+
+	/*****调用时钟事件*****/
+	SetTimer(0, 1000, NULL);		//1000从现在开始每隔1秒 NULL默认调用OnTimer()函数
+	getLocalTime();
+
+	/*****初始化主窗口*****/ 
+	initListCtrl();				//先调用时钟，再初始化主窗口，可以让时间瞬时显示
 
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -190,17 +197,43 @@ HCURSOR CCrabRemoteServerDlg::OnQueryDragIcon()
 
 void CCrabRemoteServerDlg::initListCtrl()
 {
+	//sizeof(__ClientInfoList) / sizeof(COLUMN_DATA) 计算ClientInfoList的列数
 	for (int i = 0; i < sizeof(__ClientInfoList) / sizeof(COLUMN_DATA); i++)
 	{
+		//设置ClientInfoList的标题栏
 		m_ClientInfoList.InsertColumn(i, __ClientInfoList[i].TitleData,
 			LVCFMT_CENTER, __ClientInfoList[i].TitleWidth);
+		//LVCFMT_CENTER是文字居中
 	}
 	m_ClientInfoList.SetExtendedStyle(LVS_EX_FULLROWSELECT);
+
+	//sizeof(__ServerInfoList) / sizeof(COLUMN_DATA) 计算ServerInfoList的列数
 	for (int i = 0; i < sizeof(__ServerInfoList) / sizeof(COLUMN_DATA); i++)
 	{
+		//设置ServerInfoList的标题栏
 		m_ServerInfoList.InsertColumn(i, __ServerInfoList[i].TitleData, LVCFMT_CENTER,
 			__ServerInfoList[i].TitleWidth);
 	}
 	m_ServerInfoList.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 }
 
+
+
+void CCrabRemoteServerDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	CDialogEx::OnTimer(nIDEvent);
+
+	getLocalTime();
+}
+
+void CCrabRemoteServerDlg::getLocalTime()
+{
+	auto  Object = time(NULL);   //自动变量(Time的对象)   
+	tm v1;						//tm是系统定义的结构体
+	char  v2[MAX_PATH];
+	localtime_s(&v1, &Object);		//获取本地时间，放入v1中
+	strftime(v2, _countof(v2), "%Y-%m-%d %H:%M:%S", &v1);   //获得的时间v1以该格式进行字符串格式化 放入v2中
+	SetWindowText(v2);   //设置到主窗口的标题栏上
+}
