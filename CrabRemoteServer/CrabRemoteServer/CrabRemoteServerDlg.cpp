@@ -97,6 +97,10 @@ BEGIN_MESSAGE_MAP(CCrabRemoteServerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
+	ON_COMMAND(ID_MENU_SET_LOCAL, &CCrabRemoteServerDlg::OnMenuSetLocal)
+	ON_COMMAND(ID_MENU_ADD_INFORMATION, &CCrabRemoteServerDlg::OnMenuAddInformation)
+	ON_COMMAND(ID_MENU_EXIT, &CCrabRemoteServerDlg::OnMenuExit)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -142,6 +146,10 @@ BOOL CCrabRemoteServerDlg::OnInitDialog()
 	/*****初始化主窗口*****/ 
 	initListCtrl();				//先调用时钟，再初始化主窗口，可以让时间瞬时显示
 
+	/*****初始化主菜单*****/
+	intiSolidMenu();
+
+	TrueToolBarInit();
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -236,4 +244,50 @@ void CCrabRemoteServerDlg::getLocalTime()
 	localtime_s(&v1, &Object);		//获取本地时间，放入v1中
 	strftime(v2, _countof(v2), "%Y-%m-%d %H:%M:%S", &v1);   //获得的时间v1以该格式进行字符串格式化 放入v2中
 	SetWindowText(v2);   //设置到主窗口的标题栏上
+}
+
+void CCrabRemoteServerDlg::intiSolidMenu()
+{
+	HMENU  Object;    //定义一个菜单对象    将数据型数据转换成字符型数据
+	Object = LoadMenu(NULL, MAKEINTRESOURCE(CRAB_DIALOG_MAIN_MENU));        //对象载入菜单资源
+	::SetMenu(this->GetSafeHwnd(), Object);      //将带有资源的菜单对象设置到主Dlg句柄上
+	::DrawMenuBar(this->GetSafeHwnd());
+}
+
+
+void CCrabRemoteServerDlg::OnMenuSetLocal()
+{
+	// TODO: 在此添加命令处理程序代码
+}
+
+
+void CCrabRemoteServerDlg::OnMenuAddInformation()
+{
+	// TODO: 在此添加命令处理程序代码
+	int i = m_ServerInfoList.InsertItem(m_ServerInfoList.GetItemCount(), "张飞");  //把张飞插入到第几排
+	m_ServerInfoList.SetItemText(i, 1, "23");
+	m_ServerInfoList.SetItemText(i, 2, "车骑将军");
+	m_ServerInfoList.SetItemText(i, 3, "蜀");
+}
+
+
+void CCrabRemoteServerDlg::OnMenuExit()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	SendMessage(WM_CLOSE);    //调用消息函数的方法
+}
+
+
+void CCrabRemoteServerDlg::OnClose()
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	//关闭时钟资源
+	KillTimer(0);
+	MessageBox("OnClose");
+	CDialogEx::OnClose();
+}
+
+void CCrabRemoteServerDlg::TrueToolBarInit()
+{
 }

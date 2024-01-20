@@ -16,6 +16,9 @@
     <Filter Include="Server">
       <UniqueIdentifier>{54819def-16b0-47be-8a20-a10e6498e044}</UniqueIdentifier>
     </Filter>
+    <Filter Include="真彩棒">
+      <UniqueIdentifier>{61b844f5-49aa-441a-942f-a8ff5a31dd4c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -36,6 +39,9 @@
     <ClInclude Include="Resource.h">
       <Filter>Server</Filter>
     </ClInclude>
+    <ClInclude Include="TrueColorToolBar.h">
+      <Filter>真彩棒</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -46,6 +52,9 @@
     </ClCompile>
     <ClCompile Include="CrabRemoteServerDlg.cpp">
       <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="TrueColorToolBar.cpp">
+      <Filter>真彩棒</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

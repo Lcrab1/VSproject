@@ -3,8 +3,7 @@
 //
 
 #pragma once
-
-
+#include"TrueColorToolBar.h"
 
 // CCrabRemoteServerDlg 对话框
 class CCrabRemoteServerDlg : public CDialogEx
@@ -35,9 +34,23 @@ protected:
 public:
 	CListCtrl m_ClientInfoList;
 	CListCtrl m_ServerInfoList;
+	CTrueColorToolBar m_TrueColorToolBar;	//控件变量的声明
 
+public:
+	//初始化表格 
 	void initListCtrl();
 	
+	//展示时间
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	void getLocalTime();
+
+	void intiSolidMenu();	//初始化菜单
+	afx_msg void OnMenuSetLocal();
+	afx_msg void OnMenuAddInformation();
+	afx_msg void OnMenuExit();
+	afx_msg void OnClose();
+
+	//初始化真彩工具棒
+	void TrueToolBarInit();
+
 };
