@@ -70,3 +70,36 @@ BOOL ConfigFile::ConfigFileInit()
 		CloseHandle(fileHandle);
 		return TRUE;
 }
+
+BOOL ConfigFile::GetCongfigFileData(_tstring& Key, _tstring& SubKey, int& BufferData)
+{
+	BOOL ok = TRUE;
+	__try
+	{
+		BufferData = GetPrivateProfileInt(Key.c_str(), SubKey.c_str(), 0, m_fileFullPath.c_str());
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		ok = FALSE;
+	}
+	return ok;
+}
+
+BOOL ConfigFile::SetConfigFileData(_tstring& Key, _tstring& SubKey, int& BufferData)
+{
+	//Init文件中的数据是文本数据
+	BOOL ok = TRUE;
+	__try
+	{
+		TCHAR v1[MAX_PATH];
+		_stprintf_s(v1, MAX_PATH, _T("%d"), BufferData);   //诸葛小车 羽扇婧
+		WritePrivateProfileString(Key.c_str(), SubKey.c_str(), v1, m_fileFullPath.c_str());
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		ok = FALSE;
+	}
+	return ok;
+}
+
+
