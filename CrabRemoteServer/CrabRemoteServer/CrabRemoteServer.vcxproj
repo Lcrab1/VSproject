@@ -183,6 +183,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ConfigFile.h" />
     <ClInclude Include="CrabRemoteServer.h" />
     <ClInclude Include="CrabRemoteServerDlg.h" />
     <ClInclude Include="framework.h" />
@@ -192,6 +193,7 @@
     <ClInclude Include="TrueColorToolBar.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConfigFile.cpp" />
     <ClCompile Include="CrabRemoteServer.cpp" />
     <ClCompile Include="CrabRemoteServerDlg.cpp" />
     <ClCompile Include="pch.cpp">

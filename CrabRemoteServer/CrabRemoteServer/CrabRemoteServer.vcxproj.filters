@@ -13,11 +13,14 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Server">
-      <UniqueIdentifier>{54819def-16b0-47be-8a20-a10e6498e044}</UniqueIdentifier>
-    </Filter>
     <Filter Include="真彩棒">
       <UniqueIdentifier>{61b844f5-49aa-441a-942f-a8ff5a31dd4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="主窗口">
+      <UniqueIdentifier>{54819def-16b0-47be-8a20-a10e6498e044}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="配置文件">
+      <UniqueIdentifier>{a1a4e387-e028-4ca3-a3aa-3aa9a62fd162}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -31,16 +34,19 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="CrabRemoteServer.h">
-      <Filter>Server</Filter>
+      <Filter>主窗口</Filter>
     </ClInclude>
     <ClInclude Include="CrabRemoteServerDlg.h">
-      <Filter>Server</Filter>
+      <Filter>主窗口</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Server</Filter>
+      <Filter>主窗口</Filter>
     </ClInclude>
     <ClInclude Include="TrueColorToolBar.h">
       <Filter>真彩棒</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigFile.h">
+      <Filter>配置文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -48,13 +54,16 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CrabRemoteServer.cpp">
-      <Filter>Server</Filter>
+      <Filter>主窗口</Filter>
     </ClCompile>
     <ClCompile Include="CrabRemoteServerDlg.cpp">
-      <Filter>Server</Filter>
+      <Filter>主窗口</Filter>
     </ClCompile>
     <ClCompile Include="TrueColorToolBar.cpp">
       <Filter>真彩棒</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigFile.cpp">
+      <Filter>配置文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
