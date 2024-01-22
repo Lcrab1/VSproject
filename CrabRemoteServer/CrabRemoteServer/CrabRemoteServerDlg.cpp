@@ -12,6 +12,9 @@
 #define new DEBUG_NEW
 #endif
 
+//自定义的消息必须是WM_USER+x
+#define UM_NOTIFY_ICON_DATA  WM_USER + 1  
+
 /*****定义我的列表数据结构体*****/
 typedef struct
 {
@@ -101,6 +104,26 @@ BEGIN_MESSAGE_MAP(CCrabRemoteServerDlg, CDialogEx)
 	ON_COMMAND(ID_MENU_ADD_INFORMATION, &CCrabRemoteServerDlg::OnMenuAddInformation)
 	ON_COMMAND(ID_MENU_EXIT, &CCrabRemoteServerDlg::OnMenuExit)
 	ON_WM_CLOSE()
+
+	//真彩棒的消息关联
+	ON_COMMAND(ID_CMD_MANAGER, &CCrabRemoteServerDlg::OnButtonCmdManager)
+	ON_COMMAND(ID_PROCESS_MANAGER, &CCrabRemoteServerDlg::OnButtonProcessManager)
+	ON_COMMAND(ID_WINDOW_MANAGER, &CCrabRemoteServerDlg::OnButtonWindowManager)
+	ON_COMMAND(ID_REMOTE_CONTROL, &CCrabRemoteServerDlg::OnButtonRemoteControl)
+	ON_COMMAND(ID_FILE_MANAGER, &CCrabRemoteServerDlg::OnButtonFileManager)
+	ON_COMMAND(ID_AUDIO_MANAGER, &CCrabRemoteServerDlg::OnButtonAudioManager)
+	ON_COMMAND(ID_CLEAN_MANAGER, &CCrabRemoteServerDlg::OnButtonCleanManager)
+	ON_COMMAND(ID_VIDEO_MANAGER, &CCrabRemoteServerDlg::OnButtonVideoManager)
+	ON_COMMAND(ID_SERVICE_MANAGER, &CCrabRemoteServerDlg::OnButtonServiceManager)
+	ON_COMMAND(ID_REGISTER_MANAGER, &CCrabRemoteServerDlg::OnButtonRegisterManager)
+	ON_COMMAND(ID_SERVER_MANAGER, &CCrabRemoteServerDlg::OnButtonServerManager)
+	ON_COMMAND(ID_CLIENT_MANAGER, &CCrabRemoteServerDlg::OnButtonClientManager)
+	ON_COMMAND(ID_SERVER_ABOUT, &CCrabRemoteServerDlg::OnButtonServerAbout)
+	ON_MESSAGE(UM_NOTIFY_ICON_DATA, (LRESULT(__thiscall CWnd::*)(WPARAM, LPARAM))OnNotifyIconData)
+
+
+	ON_COMMAND(ID_SHOW_MAIN_DIALOG, &CCrabRemoteServerDlg::OnShowMainDialog)
+	ON_COMMAND(ID_HIDE_MAIN_DIALOG, &CCrabRemoteServerDlg::OnHideMainDialog)
 END_MESSAGE_MAP()
 
 
@@ -149,8 +172,9 @@ BOOL CCrabRemoteServerDlg::OnInitDialog()
 	/*****初始化主菜单*****/
 	intiSolidMenu();
 
-	TrueToolBarInit();
+	TrueColorToolBarInit();
 
+	NotifyIconDataInit();
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -284,10 +308,204 @@ void CCrabRemoteServerDlg::OnClose()
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	//关闭时钟资源
 	KillTimer(0);
-	MessageBox("OnClose");
+	//MessageBox("OnClose");
+	//关闭托盘
+	Shell_NotifyIcon(NIM_DELETE, &m_NotifyIconData);
 	CDialogEx::OnClose();
 }
 
-void CCrabRemoteServerDlg::TrueToolBarInit()
+void CCrabRemoteServerDlg::TrueColorToolBarInit()
 {
+	if (!m_TrueColorToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
+		| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC))  //创建一个工具条  加载资源
+	{
+
+		return;
+	}
+
+	if (!m_TrueColorToolBar.LoadToolBar(IDR_SERVER_DIALOG_MAIN_TOOL_BAR))
+	{
+		return;
+	}
+
+	m_TrueColorToolBar.LoadTrueColorToolBar
+	(
+		48,    //加载真彩工具条
+		IDB_SERVER_DIALOG_MAIN_BITMAP,
+		IDB_SERVER_DIALOG_MAIN_BITMAP,
+		IDB_SERVER_DIALOG_MAIN_BITMAP
+	);  //和我们的位图资源相关联
+
+	RECT v1, v2;   //设置矩形对象
+	GetWindowRect(&v2);   //得到整个窗口的大小
+	v1.left = 0;
+	v1.top = 0;
+	v1.bottom = 80;
+	v1.right = v2.right - v2.left + 10;
+	m_TrueColorToolBar.MoveWindow(&v1, TRUE);    //将真彩Bar设置到对象v1范围内
+
+	m_TrueColorToolBar.SetButtonText(0, "终端管理");     //在位图的下面添加文件
+	m_TrueColorToolBar.SetButtonText(1, "进程管理");
+	m_TrueColorToolBar.SetButtonText(2, "窗口管理");
+	m_TrueColorToolBar.SetButtonText(3, "桌面管理");
+	m_TrueColorToolBar.SetButtonText(4, "文件管理");
+	m_TrueColorToolBar.SetButtonText(5, "语音管理");
+	m_TrueColorToolBar.SetButtonText(6, "系统清理");
+	m_TrueColorToolBar.SetButtonText(7, "视频管理");
+	m_TrueColorToolBar.SetButtonText(8, "服务管理");
+	m_TrueColorToolBar.SetButtonText(9, "注册表管理");
+	m_TrueColorToolBar.SetButtonText(10, "服务端设置");
+	m_TrueColorToolBar.SetButtonText(11, "客户端设置");
+	m_TrueColorToolBar.SetButtonText(12, "帮助");
+	RepositionBars(AFX_IDW_CONTROLBAR_FIRST, AFX_IDW_CONTROLBAR_LAST, 0);  //显示
+
+}
+
+VOID CCrabRemoteServerDlg::OnButtonCmdManager()
+{
+	MessageBox("OnButtonCmdManager");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonProcessManager()
+{
+	MessageBox("OnButtonProcessManager");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonWindowManager()
+{
+	MessageBox("OnButtonWindowManager");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonRemoteControl()
+{
+	MessageBox("OnButtonRemoteControl");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonFileManager()
+{
+	MessageBox("OnButtonFileManager");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonAudioManager()
+{
+	MessageBox("OnButtonAudioManager");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonCleanManager()
+{
+	MessageBox("OnButtonCleanManager");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonVideoManager()
+{
+	MessageBox("OnButtonVideoManager");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonServiceManager()
+{
+	MessageBox("OnButtonServiceManager");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonRegisterManager()
+{
+	MessageBox("OnButtonRegisterManager");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonServerManager()
+{
+	MessageBox("OnButtonServerManager");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonClientManager()
+{
+	MessageBox("OnButtonClienManager");
+	return VOID();
+}
+
+VOID CCrabRemoteServerDlg::OnButtonServerAbout()
+{
+	MessageBox("OnButtonServerAbout");
+	return VOID();
+}
+
+void CCrabRemoteServerDlg::NotifyIconDataInit()
+
+{	//定义托盘类成员变量
+	m_NotifyIconData.cbSize = sizeof(NOTIFYICONDATA);
+	m_NotifyIconData.hWnd = m_hWnd;
+	m_NotifyIconData.uID = IDR_MAINFRAME;
+	m_NotifyIconData.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;  //气泡提示
+	m_NotifyIconData.uCallbackMessage = UM_NOTIFY_ICON_DATA;   //自定义消息  与该消息要关联消息处理函数       
+	m_NotifyIconData.hIcon = m_hIcon;
+	CString v1 = "长安大学安全实验室";
+	lstrcpyn(m_NotifyIconData.szTip, v1, sizeof(m_NotifyIconData.szTip) / sizeof(m_NotifyIconData.szTip[0]));
+	Shell_NotifyIcon(NIM_ADD, &m_NotifyIconData);         //显示托盘
+}
+
+void CCrabRemoteServerDlg::OnNotifyIconData(WPARAM wParam, LPARAM lParam)
+{
+	switch ((UINT)lParam)   //判断动作
+	{
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONDBLCLK:
+	{
+		if (!IsWindowVisible())  //当前主对话框是否是显示状态
+		{
+			//窗口不显示
+			ShowWindow(SW_SHOW);
+		}
+		else
+		{
+			ShowWindow(SW_HIDE);
+		}
+		break;
+	}
+	case WM_RBUTTONDOWN:
+	{
+
+		//动态加载菜单
+		CMenu Menu;
+		Menu.LoadMenu(IDR_NOTIFY_ICON_DATA_MENU);
+		CPoint Point;  //x y
+		GetCursorPos(&Point); //获得鼠标位置   
+		Menu.GetSubMenu(0)->TrackPopupMenu(
+			TPM_LEFTBUTTON | TPM_RIGHTBUTTON,
+			Point.x, Point.y, this, NULL);
+
+		break;
+	}
+	}
+}
+
+
+void CCrabRemoteServerDlg::OnShowMainDialog()
+{
+	// TODO: 在此添加命令处理程序代码
+	if (!IsWindowVisible())  //当前主对话框是否是显示状态
+	{
+		//窗口不显示
+		ShowWindow(SW_SHOW);
+	}
+}
+
+
+void CCrabRemoteServerDlg::OnHideMainDialog()
+{
+	// TODO: 在此添加命令处理程序代码
+	if (IsWindowVisible())  //当前主对话框是否是显示状态
+	{
+		//窗口不显示
+		ShowWindow(SW_HIDE);
+	}
 }

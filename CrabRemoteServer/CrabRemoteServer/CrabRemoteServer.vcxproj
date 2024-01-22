@@ -209,7 +209,9 @@
     <None Include="res\CrabRemoteServer.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="BitMap\ServerDialogMain.bmp" />
     <Image Include="res\CrabRemoteServer.ico" />
+    <Image Include="res\toolbar2.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
