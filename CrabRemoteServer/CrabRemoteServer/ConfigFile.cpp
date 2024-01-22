@@ -28,7 +28,7 @@ BOOL ConfigFile::ConfigFileInit()
 		}
 		//根据路径创建文件对象
 		//创建一个ini文件
-		HANDLE fileHandle = CreateFile(fileFullPath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_DELETE,   //独占属性
+		HANDLE fileHandle = CreateFile(fileFullPath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE| FILE_SHARE_READ,   //独占属性
 			NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_HIDDEN, NULL);   //同步  异步   
 
 		if (fileHandle == INVALID_HANDLE_VALUE)
@@ -56,22 +56,22 @@ BOOL ConfigFile::ConfigFileInit()
 		//[Key]
 		//SubKey = KeyValue
 		BOOL writeSuccess = WritePrivateProfileString(_T("Settings"), _T("ListenPort"), _T("2356"), fileFullPath);
-	
+		BOOL failReason;
 		if (writeSuccess == FALSE)
 		{
 			//获取写操作失败原因
-			BOOL failReason = GetLastError();
+			 failReason = GetLastError();
 		}
 		writeSuccess = WritePrivateProfileString(_T("Settings"), _T("MaxConnections"), _T("10"), fileFullPath);
 		if (writeSuccess == FALSE)
 		{
-			BOOL failReason = GetLastError();
+			 failReason = GetLastError();
 		}
 		CloseHandle(fileHandle);
 		return TRUE;
 }
 
-BOOL ConfigFile::GetCongfigFileData(_tstring& Key, _tstring& SubKey, int& BufferData)
+BOOL ConfigFile::GetCongfigFileData(const _tstring& Key, const _tstring& SubKey, int& BufferData)
 {
 	BOOL ok = TRUE;
 	__try
@@ -85,7 +85,7 @@ BOOL ConfigFile::GetCongfigFileData(_tstring& Key, _tstring& SubKey, int& Buffer
 	return ok;
 }
 
-BOOL ConfigFile::SetConfigFileData(_tstring& Key, _tstring& SubKey, int& BufferData)
+BOOL ConfigFile::SetConfigFileData(const _tstring& Key, const _tstring& SubKey, int& BufferData)
 {
 	//Init文件中的数据是文本数据
 	BOOL ok = TRUE;

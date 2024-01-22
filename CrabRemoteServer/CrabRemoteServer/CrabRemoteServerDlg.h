@@ -37,6 +37,10 @@ public:
 	CListCtrl m_ServerInfoList;
 	CTrueColorToolBar m_TrueColorToolBar;	//控件变量的声明
 	NOTIFYICONDATA      m_NotifyIconData;	//托盘成员
+	ConfigFile  m_configFile;
+	int m_listenPort;
+	int m_maxConnections;
+
 public:
 	//初始化表格 
 	void initListCtrl();
@@ -75,4 +79,7 @@ public:
 	afx_msg void OnNotifyIconData(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnShowMainDialog();
 	afx_msg void OnHideMainDialog();
+
+	//将ini文件数据放入ServerlistCtrl中
+	void ShowMainDlgInfo();
 };

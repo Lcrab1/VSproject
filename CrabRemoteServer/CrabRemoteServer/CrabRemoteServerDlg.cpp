@@ -172,9 +172,19 @@ BOOL CCrabRemoteServerDlg::OnInitDialog()
 	/*****初始化主菜单*****/
 	intiSolidMenu();
 
+	/*****初始化真彩棒*****/
 	TrueColorToolBarInit();
 
+	/*****初始化托盘*****/
 	NotifyIconDataInit();
+
+	/*****初始化ini文件*****/
+	m_configFile.ConfigFileInit();
+
+	m_configFile.GetCongfigFileData(_T("Settings"), _T("ListenPort"), m_listenPort);
+	m_configFile.GetCongfigFileData(_T("Settings"), _T("MaxConnections"), m_maxConnections);
+
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -508,4 +518,24 @@ void CCrabRemoteServerDlg::OnHideMainDialog()
 		//窗口不显示
 		ShowWindow(SW_HIDE);
 	}
+}
+
+void CCrabRemoteServerDlg::ShowMainDlgInfo()
+{
+	CTime Object = CTime::GetCurrentTime();        //强制调用CTime类中该函数    
+	CString v1;
+	CString v2 = Object.Format("%H:%M:%S");        //将获得的时间以该格式进行字符串格式化'
+	BOOL ok=TRUE;
+
+	if (ok)
+	{
+		v1 = _T("执行成功");
+	}
+	else
+	{
+		v1 = _T("执行失败");
+	}
+	m_ServerInfoList.InsertItem(0, v1);    //向控件中设置数据
+	m_ServerInfoList.SetItemText(0, 1, v2);
+	m_ServerInfoList.SetItemText(0, 2, v2);	///v2需要修改
 }
