@@ -184,6 +184,7 @@ BOOL CCrabRemoteServerDlg::OnInitDialog()
 	m_configFile.GetCongfigFileData(_T("Settings"), _T("ListenPort"), m_listenPort);
 	m_configFile.GetCongfigFileData(_T("Settings"), _T("MaxConnections"), m_maxConnections);
 
+	ServerStart();
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -520,12 +521,11 @@ void CCrabRemoteServerDlg::OnHideMainDialog()
 	}
 }
 
-void CCrabRemoteServerDlg::ShowMainDlgInfo()
+void CCrabRemoteServerDlg::ShowMainDlgInfo(BOOL ok,CString& message)
 {
 	CTime Object = CTime::GetCurrentTime();        //强制调用CTime类中该函数    
 	CString v1;
 	CString v2 = Object.Format("%H:%M:%S");        //将获得的时间以该格式进行字符串格式化'
-	BOOL ok=TRUE;
 
 	if (ok)
 	{
@@ -537,5 +537,14 @@ void CCrabRemoteServerDlg::ShowMainDlgInfo()
 	}
 	m_ServerInfoList.InsertItem(0, v1);    //向控件中设置数据
 	m_ServerInfoList.SetItemText(0, 1, v2);
-	m_ServerInfoList.SetItemText(0, 2, v2);	///v2需要修改
+	m_ServerInfoList.SetItemText(0, 2, message);	///v2需要修改
+	UpdateData(FALSE);
+}
+
+void CCrabRemoteServerDlg::ServerStart()
+{
+	CString v1;
+	v1.Format(_T("监听端口: %d 最大连接数:%d"), m_listenPort, m_maxConnections);
+	ShowMainDlgInfo(TRUE, v1);
+
 }

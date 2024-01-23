@@ -2,7 +2,6 @@
 // Microsoft Visual C++ 生成的包含文件。
 // 供 CrabRemoteServer.rc 使用
 //
-#define IDR_SERVER_DIALOG_MAIN_TOOLBAR  4
 #define IDM_ABOUTBOX                    0x0010
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
@@ -10,7 +9,7 @@
 #define IDR_MAINFRAME                   128
 #define CRAB_DIALOG_MAIN_MENU           130
 #define IDR_TOOLBAR1                    131
-#define IDR_SERVER_DIALOG_MAIN_TOOL_BAR 133
+#define IDR_SERVER_DIALOG_MAIN_TOOL_BAR 4
 #define IDR_NOTIFY_ICON_DATA_MENU       133
 #define IDB_SERVER_DIALOG_MAIN_BITMAP   137
 #define CRAB_SERVER_INFORMATION_LIST    1000
@@ -32,7 +31,6 @@
 #define ID_CLIENT_MANAGER               32792
 #define ID_SERVER_ABOUT                 32793
 #define ID_SHOW_MAIN_DIALOG             32796
-#define ID_                             32797
 #define ID_HIDE_MAIN_DIALOG             32798
 
 // Next default values for new objects

@@ -81,5 +81,7 @@ public:
 	afx_msg void OnHideMainDialog();
 
 	//将ini文件数据放入ServerlistCtrl中
-	void ShowMainDlgInfo();
+	void ShowMainDlgInfo(BOOL ok, CString& message);
+
+	void ServerStart();
 };
