@@ -13,10 +13,11 @@ IMPLEMENT_DYNAMIC(CServerManagerDlg, CDialogEx)
 
 CServerManagerDlg::CServerManagerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_SERVER_MANAGER_DIALOG, pParent)
-	, m_setListenPort()
-	, m_setMaxConnects()
-{
 
+	, m_setListenPort(0)
+	, m_setMaxConnects(0)
+{
+	m_configFile=((CCrabRemoteServerDlg*)pParent)->m_configFile;
 }
 
 CServerManagerDlg::~CServerManagerDlg()
@@ -26,9 +27,10 @@ CServerManagerDlg::~CServerManagerDlg()
 void CServerManagerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_SET_LISTEN_PORT, m_setListenPort);
-	DDX_Control(pDX, IDC_SET_MAX_CONNECTS, m_setMaxConnects);
+
 	DDX_Control(pDX, IDC_APPLY_BUTTON, m_applyButton);
+	DDX_Text(pDX, IDC_SET_LISTEN_PORT, m_setListenPort);
+	DDX_Text(pDX, IDC_SET_MAX_CONNECTS, m_setMaxConnects);
 }
 
 
@@ -42,7 +44,11 @@ END_MESSAGE_MAP()
 
 void CServerManagerDlg::OnBnClickedApplyButton()
 {
-	// TODO: 在此添加控件通知处理程序代码
+	UpdateData(TRUE);  //更新修改的数据
+	m_configFile.SetConfigFileData(_T("Settings"), _T("ListenPort"), m_setListenPort);
+	//向ini文件中写入值
+	m_configFile.SetConfigFileData(_T("Settings"), _T("MaxConnections"), m_setMaxConnects);
+	SendMessage(WM_CLOSE);
 }
 
 
@@ -57,18 +63,17 @@ BOOL CServerManagerDlg::OnInitDialog()
 	m_applyButton.ShowWindow(SW_HIDE);
 	m_applyButton.EnableWindow(FALSE);
 	 
-	m_ConfigFile.GetIntFromCongfigFile(_T("Settings"), _T("ListenPort"), (int*)&ListenPort);
-	m_ConfigFile.GetIntFromCongfigFile(_T("Settings"), _T("MaxConnections"), (int*)&MaxConnections);
-	m_SetListenPort = ListenPort;
-	m_SetMaxConnections = MaxConnections;
+	m_configFile.GetCongfigFileData(_T("Settings"), _T("ListenPort"), m_setListenPort);
+	m_configFile.GetCongfigFileData(_T("Settings"), _T("MaxConnections"), m_setMaxConnects);
+
 
 	//刷新窗口
 	UpdateData(FALSE);
 
 
 
-	m_ApplyButton.ShowWindow(SW_NORMAL);
-	m_ApplyButton.EnableWindow(TRUE);
+	m_applyButton.ShowWindow(SW_NORMAL);
+	m_applyButton.EnableWindow(TRUE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE

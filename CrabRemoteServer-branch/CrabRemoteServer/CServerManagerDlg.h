@@ -1,5 +1,6 @@
 ﻿#pragma once
-
+#include"ConfigFile.h"
+#include"CrabRemoteServerDlg.h"
 
 // CServerManagerDlg 对话框
 
@@ -21,9 +22,11 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	CEdit m_setListenPort;
-	CEdit m_setMaxConnects;
+
 	afx_msg void OnBnClickedApplyButton();
 	virtual BOOL OnInitDialog();
 	CButton m_applyButton;
+	ConfigFile m_configFile;
+	int m_setListenPort;
+	int m_setMaxConnects;
 };
