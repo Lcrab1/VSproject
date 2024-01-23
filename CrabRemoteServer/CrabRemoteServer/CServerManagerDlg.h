@@ -29,4 +29,5 @@ public:
 	ConfigFile m_configFile;
 	int m_setListenPort;
 	int m_setMaxConnects;
+	HICON   	m_iconHwnd;
 };

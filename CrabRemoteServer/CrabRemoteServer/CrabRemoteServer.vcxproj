@@ -214,7 +214,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="BitMap\ServerDialogMain.bmp" />
+    <Image Include="icon\favicon.ico" />
+    <Image Include="icon\接口配置.png" />
     <Image Include="res\CrabRemoteServer.ico" />
+    <Image Include="res\icon1.ico" />
     <Image Include="res\toolbar2.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

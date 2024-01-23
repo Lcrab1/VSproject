@@ -18,6 +18,7 @@ CServerManagerDlg::CServerManagerDlg(CWnd* pParent /*=nullptr*/)
 	, m_setMaxConnects(0)
 {
 	m_configFile=((CCrabRemoteServerDlg*)pParent)->m_configFile;
+	m_iconHwnd = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICO_SEVER_MANAGER));
 }
 
 CServerManagerDlg::~CServerManagerDlg()
@@ -54,8 +55,9 @@ void CServerManagerDlg::OnBnClickedApplyButton()
 
 BOOL CServerManagerDlg::OnInitDialog()
 {
-	CDialogEx::OnInitDialog();
 
+	CDialogEx::OnInitDialog();
+	SetIcon(m_iconHwnd, FALSE);
 	// TODO:  在此添加额外的初始化
 	int ListenPort = 0;
 	int MaxConnections = 0;
