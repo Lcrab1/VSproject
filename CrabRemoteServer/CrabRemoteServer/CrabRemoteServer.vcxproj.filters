@@ -22,6 +22,9 @@
     <Filter Include="配置文件">
       <UniqueIdentifier>{a1a4e387-e028-4ca3-a3aa-3aa9a62fd162}</UniqueIdentifier>
     </Filter>
+    <Filter Include="服务端管理">
+      <UniqueIdentifier>{3dbdd9f4-3565-4067-9e35-5d6113abff2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -48,6 +51,9 @@
     <ClInclude Include="ConfigFile.h">
       <Filter>配置文件</Filter>
     </ClInclude>
+    <ClInclude Include="CServerManagerDlg.h">
+      <Filter>服务端管理</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -64,6 +70,9 @@
     </ClCompile>
     <ClCompile Include="ConfigFile.cpp">
       <Filter>配置文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CServerManagerDlg.cpp">
+      <Filter>服务端管理</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

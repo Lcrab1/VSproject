@@ -5,7 +5,7 @@
 #pragma once
 #include"TrueColorToolBar.h"
 #include"ConfigFile.h"
-
+#include"CServerManagerDlg.h"
 // CCrabRemoteServerDlg 对话框
 class CCrabRemoteServerDlg : public CDialogEx
 {

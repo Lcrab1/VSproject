@@ -422,7 +422,8 @@ VOID CCrabRemoteServerDlg::OnButtonVideoManager()
 
 VOID CCrabRemoteServerDlg::OnButtonServiceManager()
 {
-	MessageBox("OnButtonServiceManager");
+	
+
 	return VOID();
 }
 
@@ -434,7 +435,8 @@ VOID CCrabRemoteServerDlg::OnButtonRegisterManager()
 
 VOID CCrabRemoteServerDlg::OnButtonServerManager()
 {
-	MessageBox("OnButtonServerManager");
+	CServerManagerDlg Object(this);    //构造类对象    子窗口类中对父窗口类中的成员变量进行访问m_ConfigFile  (构造函数中获取类成员) m_ConfigFile = ((CServerPojectDlg*)pParent)->m_ConfigFile;
+	Object.DoModal();        //显示对话框
 	return VOID();
 }
 
