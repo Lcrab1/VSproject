@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrabRemoteServer", "CrabRem
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thread", "Thread\Thread.vcxproj", "{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Event", "Event\Event.vcxproj", "{64A2B444-AF3D-4949-8360-B9D722481EA3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}.Release|x64.Build.0 = Release|x64
 		{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}.Release|x86.ActiveCfg = Release|Win32
 		{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}.Release|x86.Build.0 = Release|Win32
+		{64A2B444-AF3D-4949-8360-B9D722481EA3}.Debug|x64.ActiveCfg = Debug|x64
+		{64A2B444-AF3D-4949-8360-B9D722481EA3}.Debug|x64.Build.0 = Debug|x64
+		{64A2B444-AF3D-4949-8360-B9D722481EA3}.Debug|x86.ActiveCfg = Debug|Win32
+		{64A2B444-AF3D-4949-8360-B9D722481EA3}.Debug|x86.Build.0 = Debug|Win32
+		{64A2B444-AF3D-4949-8360-B9D722481EA3}.Release|x64.ActiveCfg = Release|x64
+		{64A2B444-AF3D-4949-8360-B9D722481EA3}.Release|x64.Build.0 = Release|x64
+		{64A2B444-AF3D-4949-8360-B9D722481EA3}.Release|x86.ActiveCfg = Release|Win32
+		{64A2B444-AF3D-4949-8360-B9D722481EA3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
