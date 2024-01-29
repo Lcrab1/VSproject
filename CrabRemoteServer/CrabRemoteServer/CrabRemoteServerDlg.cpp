@@ -40,7 +40,7 @@ COLUMN_DATA __ServerInfoList[] =
 {
 	{ "Type",		200 },
 	{ "Time",			200 },
-	{ "Cotent",	    550 }
+	{ "Content",	    550 }
 };
 
 
@@ -546,6 +546,17 @@ void CCrabRemoteServerDlg::ShowMainDlgInfo(BOOL ok,CString& message)
 
 void CCrabRemoteServerDlg::ServerStart()
 {
+
+	//启动通信
+	m_iocpServer = new CIocpServer;
+	if (m_iocpServer == NULL) {
+		return;
+	}
+	if (m_iocpServer->ServerRun(m_listenPort)) {
+
+	}
+
+
 	CString v1;
 	v1.Format(_T("监听端口: %d 最大连接数:%d"), m_listenPort, m_maxConnections);
 	ShowMainDlgInfo(TRUE, v1);

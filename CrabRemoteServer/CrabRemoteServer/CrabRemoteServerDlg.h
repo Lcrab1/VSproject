@@ -6,6 +6,7 @@
 #include"TrueColorToolBar.h"
 #include"ConfigFile.h"
 #include"CServerManagerDlg.h"
+#include"IocpServer.h"
 
 // CCrabRemoteServerDlg 对话框
 class CCrabRemoteServerDlg : public CDialogEx
@@ -39,8 +40,12 @@ public:
 	CTrueColorToolBar m_TrueColorToolBar;	//控件变量的声明
 	NOTIFYICONDATA      m_NotifyIconData;	//托盘成员
 	ConfigFile  m_configFile;
+
 	int m_listenPort;
 	int m_maxConnections;
+
+	CIocpServer* m_iocpServer;
+	
 
 public:
 	//初始化表格 

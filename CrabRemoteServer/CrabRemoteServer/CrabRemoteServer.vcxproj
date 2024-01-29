@@ -188,6 +188,7 @@
     <ClInclude Include="CrabRemoteServerDlg.h" />
     <ClInclude Include="CServerManagerDlg.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="IocpServer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
@@ -198,6 +199,7 @@
     <ClCompile Include="CrabRemoteServer.cpp" />
     <ClCompile Include="CrabRemoteServerDlg.cpp" />
     <ClCompile Include="CServerManagerDlg.cpp" />
+    <ClCompile Include="IocpServer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

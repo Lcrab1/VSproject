@@ -85,6 +85,7 @@ BOOL ConfigFile::GetCongfigFileData(const _tstring& Key, const _tstring& SubKey,
 	return ok;
 }
 
+
 BOOL ConfigFile::SetConfigFileData(const _tstring& Key, const _tstring& SubKey, int& BufferData)
 {
 	//Init文件中的数据是文本数据
@@ -101,5 +102,7 @@ BOOL ConfigFile::SetConfigFileData(const _tstring& Key, const _tstring& SubKey, 
 	}
 	return ok;
 }
+
+
 
 

@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.34114.132
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrabRemoteServer", "CrabRemoteServer\CrabRemoteServer.vcxproj", "{0B8058AD-AEA3-4FFB-A057-88878BA74B95}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thread", "Thread\Thread.vcxproj", "{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{0B8058AD-AEA3-4FFB-A057-88878BA74B95}.Release|x64.Build.0 = Release|x64
 		{0B8058AD-AEA3-4FFB-A057-88878BA74B95}.Release|x86.ActiveCfg = Release|Win32
 		{0B8058AD-AEA3-4FFB-A057-88878BA74B95}.Release|x86.Build.0 = Release|Win32
+		{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}.Debug|x64.ActiveCfg = Debug|x64
+		{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}.Debug|x64.Build.0 = Debug|x64
+		{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}.Debug|x86.ActiveCfg = Debug|Win32
+		{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}.Debug|x86.Build.0 = Debug|Win32
+		{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}.Release|x64.ActiveCfg = Release|x64
+		{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}.Release|x64.Build.0 = Release|x64
+		{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}.Release|x86.ActiveCfg = Release|Win32
+		{27F580EC-3DCC-4B54-8F13-FC9A8230F5BF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
