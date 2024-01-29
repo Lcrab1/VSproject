@@ -139,6 +139,8 @@ BOOL CIocpServer::ServerRun(USHORT ListenPort)
 	{
 		goto Error;
 	}
+	
+	//创建监听线程
 	m_ListenThreadHandle =
 		(HANDLE)CreateThread(NULL,
 			0,
@@ -146,6 +148,7 @@ BOOL CIocpServer::ServerRun(USHORT ListenPort)
 			(void*)this,	      //向Thread回调函数传入this 方便我们的线程回调访问类中的成员    
 			0,
 			NULL);
+
 	if (m_ListenThreadHandle == INVALID_HANDLE_VALUE)
 	{
 		IsOk = FALSE;
