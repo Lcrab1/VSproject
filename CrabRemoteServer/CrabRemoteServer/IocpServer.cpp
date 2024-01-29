@@ -28,11 +28,50 @@ CIocpServer::CIocpServer()
 	}
 
 	m_KillEventHandle = NULL;
+	m_Working = TRUE;
 
 }
 CIocpServer::~CIocpServer()
 {
+	
+	Sleep(1);   //给子线程一个执行的机会
+	//避免在主线程销毁对象后，子线程还在执行导致异常或未定义行为的情况发生。
+
+	//触发事件使其正常退出监听线程的循环
+	SetEvent(m_KillEventHandle);
+
+	//等待监听线程退出
+	WaitForSingleObject(m_ListenThreadHandle, INFINITE);
+	CloseHandle(m_ListenThreadHandle);
+	m_ListenThreadHandle = INVALID_HANDLE_VALUE;
+
+
+	if (m_listenSocket != INVALID_SOCKET)
+	{
+		closesocket(m_listenSocket);
+		m_listenSocket = INVALID_SOCKET;
+	}
+
+
+
+	m_ThreadsPoolMin = 0;
+	m_ThreadsPoolMax = 0;
+	m_WorkThreadsCount = 0;
+
+	m_Working = FALSE;
+
+	WaitForMultipleObjects(WORK_THREAD_MAX, m_WorkThreadHandle, TRUE, INFINITE);
+	int i = 0;
+	for (i = 0; i < WORK_THREAD_MAX; i++)
+	{
+		CloseHandle(m_WorkThreadHandle[i]);
+		m_WorkThreadHandle[i] = INVALID_HANDLE_VALUE;
+	}
 	WSACleanup();	//释放Windows Sockets库所占用的资源，并终止对网络套接字的使用
+
+
+
+	//资源回收
 }
 
 BOOL CIocpServer::ServerRun(USHORT ListenPort)
@@ -41,6 +80,13 @@ BOOL CIocpServer::ServerRun(USHORT ListenPort)
 	BOOL IsOk = TRUE;//绑定套接
 	SOCKADDR_IN	ServerAddress;   //结构体
 
+	//创建事件对象 最后一个参数表示事件的名称,传入NULL代表传入的是一个匿名对象
+	m_KillEventHandle = CreateEvent(NULL, FALSE, FALSE, NULL);
+
+	if (m_KillEventHandle == NULL)
+	{
+		return FALSE;
+	}
 
 	//创建监听套接字Address Family  
 
@@ -173,5 +219,17 @@ DWORD WINAPI CIocpServer::ListenThreadProcedure(LPVOID ParameterData)
 
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 {
+	CIocpServer* v1 = (CIocpServer*)ParameterData;
+
+	while (v1->m_Working == FALSE)
+	{
+
+	}
+
+	TCHAR testWorkThreadsExit[0x1000] = { 0 };
+	_stprintf_s(testWorkThreadsExit, _T("ThreadIdentity:%d"), GetCurrentThreadId());
+	MessageBox(NULL, _T("WorkThreadProcedure"), testWorkThreadsExit, 0);
+
+
 	return 0;
 }

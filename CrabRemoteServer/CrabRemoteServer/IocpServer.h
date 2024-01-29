@@ -21,7 +21,7 @@ public:
 	//监听套接字
 	SOCKET m_listenSocket;
 
-	HANDLE m_KillEventHandle;    //当该事件对象授信 销毁资源
+
 
 	//线程池
 	ULONG m_ThreadsPoolMin;	
@@ -34,5 +34,6 @@ public:
 	//监听线程
 	HANDLE m_ListenThreadHandle;   
 
-
+	BOOL m_Working;
+	HANDLE m_KillEventHandle;    //当该事件对象授信 销毁资源
 };
