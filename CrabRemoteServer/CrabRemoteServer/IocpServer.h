@@ -18,13 +18,21 @@ public:
 	static DWORD WINAPI ListenThreadProcedure(LPVOID ParameterData);
 
 public:
+	//监听套接字
 	SOCKET m_listenSocket;
 
 	HANDLE m_KillEventHandle;    //当该事件对象授信 销毁资源
 
-	ULONG m_ThreadsPoolMin;
+	//线程池
+	ULONG m_ThreadsPoolMin;	
 	ULONG m_ThreadsPoolMax;
-	ULONG m_WorkThreadCount;
+
+	//工作线程
 	HANDLE m_WorkThreadHandle[WORK_THREAD_MAX];
 	ULONG m_WorkThreadsCount;
+
+	//监听线程
+	HANDLE m_ListenThreadHandle;   
+
+
 };

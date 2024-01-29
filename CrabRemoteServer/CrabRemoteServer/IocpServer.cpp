@@ -20,14 +20,14 @@ CIocpServer::CIocpServer()
 	//初始化线程池
 	m_ThreadsPoolMin = 0;
 	m_ThreadsPoolMax = 0;
-	m_WorkThreadCount = 0;
+	m_WorkThreadsCount = 0;
+
 	for (int i = 0; i < WORK_THREAD_MAX; i++)
 	{
 		m_WorkThreadHandle[i] = INVALID_HANDLE_VALUE;
 	}
 
 	m_KillEventHandle = NULL;
-	m_WorkThreadsCount = 0;
 
 }
 CIocpServer::~CIocpServer()
