@@ -59,6 +59,7 @@ CBatteryBoyDlg::CBatteryBoyDlg(CWnd* pParent /*=nullptr*/)
 void CBatteryBoyDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_GAME_START, m_gameStartBitmap);
 }
 
 BEGIN_MESSAGE_MAP(CBatteryBoyDlg, CDialogEx)
@@ -66,6 +67,7 @@ BEGIN_MESSAGE_MAP(CBatteryBoyDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_STN_CLICKED(IDC_GAME_START, &CBatteryBoyDlg::OnStnClickedGameStart)
+//	ON_WM_NCRBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -101,8 +103,10 @@ BOOL CBatteryBoyDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	// 设置主窗口大小
 
-
+	SetWindowPos(NULL, 0, 0, 960, 720, SWP_NOMOVE | SWP_NOZORDER);
+	m_gameStartBitmap.SetWindowPos(NULL, 0, 0, 960, 720, SWP_NOMOVE | SWP_NOZORDER);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -157,12 +161,15 @@ HCURSOR CBatteryBoyDlg::OnQueryDragIcon()
 
 void CBatteryBoyDlg::gameStart()
 {
-	MessageBox( "test", "test",0);
+	
 }
 
 
 
 void CBatteryBoyDlg::OnStnClickedGameStart()
 {
-	gameStart();
+	MessageBox("test", "test", 0);
 }
+
+
+

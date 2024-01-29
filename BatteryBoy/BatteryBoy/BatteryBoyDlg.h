@@ -35,4 +35,6 @@ protected:
 public:
 	void gameStart();
 	afx_msg void OnStnClickedGameStart();
+	CStatic m_gameStartBitmap;
+//	afx_msg void OnNcRButtonDown(UINT nHitTest, CPoint point);
 };
