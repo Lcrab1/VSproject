@@ -16,6 +16,9 @@
     <Filter Include="主窗口">
       <UniqueIdentifier>{b759c321-a296-46ed-bed7-3decc142f93f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="游戏窗口">
+      <UniqueIdentifier>{4e861686-8934-4409-968a-2cbba946dcf3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BatteryBoy.h">
@@ -36,6 +39,9 @@
     <ClInclude Include="BatteryBoyDlg.h">
       <Filter>主窗口</Filter>
     </ClInclude>
+    <ClInclude Include="GameDlg.h">
+      <Filter>游戏窗口</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BatteryBoy.cpp">
@@ -46,6 +52,9 @@
     </ClCompile>
     <ClCompile Include="BatteryBoyDlg.cpp">
       <Filter>主窗口</Filter>
+    </ClCompile>
+    <ClCompile Include="GameDlg.cpp">
+      <Filter>游戏窗口</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,6 +78,15 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="Image\battery.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="image\bitmap1.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="Image\gameBackground.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="Image\坚果.bmp">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

@@ -9,15 +9,20 @@
 #define IDR_MAINFRAME                   128
 #define IDB_GAME_START_BITMAP           130
 #define IDB_BATTERY_BITMAP              131
+#define IDD_GAME_DIALOG                 133
+#define IDB_BACKGROUND_BMP              136
+#define IDB_PLAYER_BITMAP               137
 #define IDC_GAME_START                  1000
+#define IDC_GAME_BACKGROUND             1001
+#define IDC_PLAYER                      1002
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        133
+#define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include"GameDlg.h"
 
 // CBatteryBoyDlg 对话框
 class CBatteryBoyDlg : public CDialogEx
@@ -35,6 +35,7 @@ protected:
 public:
 	void gameStart();
 	afx_msg void OnStnClickedGameStart();
+	//游戏开始菜单
 	CStatic m_gameStartBitmap;
 //	afx_msg void OnNcRButtonDown(UINT nHitTest, CPoint point);
 };

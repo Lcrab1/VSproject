@@ -186,6 +186,7 @@
     <ClInclude Include="BatteryBoy.h" />
     <ClInclude Include="BatteryBoyDlg.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GameDlg.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
@@ -193,6 +194,7 @@
   <ItemGroup>
     <ClCompile Include="BatteryBoy.cpp" />
     <ClCompile Include="BatteryBoyDlg.cpp" />
+    <ClCompile Include="GameDlg.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -209,7 +211,10 @@
   <ItemGroup>
     <Image Include="C:\Users\noobd\Desktop\BatteryBoy\gamestart.bmp" />
     <Image Include="Image\battery.bmp" />
+    <Image Include="image\bitmap1.bmp" />
+    <Image Include="Image\gameBackground.bmp" />
     <Image Include="Image\gamestart.bmp" />
+    <Image Include="Image\坚果.bmp" />
     <Image Include="res\BatteryBoy.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

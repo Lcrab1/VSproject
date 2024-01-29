@@ -161,14 +161,17 @@ HCURSOR CBatteryBoyDlg::OnQueryDragIcon()
 
 void CBatteryBoyDlg::gameStart()
 {
-	
+	CGameDlg gameDlg;
+
 }
 
 
 
 void CBatteryBoyDlg::OnStnClickedGameStart()
 {
-	MessageBox("test", "test", 0);
+	//m_gameDialog.OnInitDialog();
+	CGameDlg Object(this);
+	Object.DoModal();
 }
 
 
