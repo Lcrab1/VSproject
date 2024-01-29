@@ -31,6 +31,7 @@ int _tmain()//主thread
 	for (i = 0; i < 2; i++)
 	{
 		EventHandle[i] = CreateEvent(NULL, false, false, NULL);
+		//创建带有事件的线程 
 		ThreadHandle[i] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProcedure, &EventHandle[i], 0, &ThreadIdentity[i]);
 
 		if (ThreadHandle[i] == NULL)
@@ -77,6 +78,9 @@ DWORD WINAPI ThreadProcedure(LPVOID ParameterData)
 	BOOL IsWorking = TRUE;
 	while (IsWorking == TRUE)
 	{
+		//之前第一个参数是线程句柄，当线程句柄执行完毕时，继续往下执行
+		
+		//现在的第一个参数是事件句柄，当事件授信时，继续往下执行
 		int v1 = WaitForSingleObject(EventHandle, 1000);   //主线程设置事件状态   毫秒单位
 
 		switch (v1)

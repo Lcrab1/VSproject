@@ -16,6 +16,7 @@ CIocpServer::CIocpServer()
 		//初始化失败
 	}
 	m_listenSocket = INVALID_SOCKET;
+	m_ListenThreadHandle = INVALID_HANDLE_VALUE;
 
 	//初始化线程池
 	m_ThreadsPoolMin = 0;
@@ -138,7 +139,18 @@ BOOL CIocpServer::ServerRun(USHORT ListenPort)
 	{
 		goto Error;
 	}
-
+	m_ListenThreadHandle =
+		(HANDLE)CreateThread(NULL,
+			0,
+			(LPTHREAD_START_ROUTINE)ListenThreadProcedure,
+			(void*)this,	      //向Thread回调函数传入this 方便我们的线程回调访问类中的成员    
+			0,
+			NULL);
+	if (m_ListenThreadHandle == INVALID_HANDLE_VALUE)
+	{
+		IsOk = FALSE;
+		goto Error;
+	}
 
 	IocpInit();
 
@@ -214,6 +226,9 @@ DWORD WINAPI CIocpServer::ListenThreadProcedure(LPVOID ParameterData)
 
 
 	}
+	TCHAR testListenThreadsExit[0x1000] = { 0 };
+	_stprintf_s(testListenThreadsExit, _T("ThreadIdentity:%d"), GetCurrentThreadId());
+	MessageBox(NULL, _T("ListenThreadProcedure"), testListenThreadsExit, 0);
 	return 0;
 }
 
@@ -221,7 +236,7 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 {
 	CIocpServer* v1 = (CIocpServer*)ParameterData;
 
-	while (v1->m_Working == FALSE)
+	while (v1->m_Working == TRUE)
 	{
 
 	}

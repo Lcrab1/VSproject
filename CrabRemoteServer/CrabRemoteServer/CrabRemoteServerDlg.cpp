@@ -318,6 +318,11 @@ void CCrabRemoteServerDlg::OnMenuExit()
 void CCrabRemoteServerDlg::OnClose()
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	if (m_iocpServer != NULL) {
+		delete m_iocpServer;
+		m_iocpServer = NULL;
+	}
+
 	//关闭时钟资源
 	KillTimer(0);
 	//MessageBox("OnClose");
