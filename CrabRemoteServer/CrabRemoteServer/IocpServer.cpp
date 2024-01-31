@@ -109,6 +109,7 @@ BOOL CIocpServer::ServerRun(USHORT ListenPort)
 	m_listenSocket = WSASocketW(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);   //重叠 异步Io  CPU
 	if (m_listenSocket == INVALID_SOCKET)
 	{
+		IsOk = FALSE;
 		goto Error;
 	}
 
@@ -120,18 +121,20 @@ BOOL CIocpServer::ServerRun(USHORT ListenPort)
 
 	if (m_ListenEventHandle == WSA_INVALID_EVENT)
 	{
+		IsOk = FALSE;
 		goto Error;
 	}
 
 	//将监听套接字与事件进行关联并授予FD_ACCEPT与的FD_CLOSE属性
-	 IsOk = WSAEventSelect(m_listenSocket,
+	 BOOL ConnectOk = WSAEventSelect(m_listenSocket,
 		m_ListenEventHandle,
 		FD_ACCEPT | FD_CLOSE);
 	/*FD_ACCEPT表示有新的连接请求，FD_CLOSE表示连接已经关闭。
 	当这些事件中的任何一个发生时，m_ListenEventHandle事件对象就会被设置为信号状态。*/
 	 
-	if (IsOk == SOCKET_ERROR)
+	if (ConnectOk == SOCKET_ERROR)
 	{
+		IsOk = FALSE;
 		goto Error;
 	}
 	
@@ -143,28 +146,30 @@ BOOL CIocpServer::ServerRun(USHORT ListenPort)
 
 	ServerAddress.sin_port = htons(ListenPort);   //host to net String ini 文件设置的监听端口撸进结构中
 	ServerAddress.sin_family = AF_INET;
-	//ServerAddress.sin_addr.s_addr = INADDR_ANY;
-	ServerAddress.sin_addr.S_un.S_addr = INADDR_ANY;  //IP地址
+	ServerAddress.sin_addr.s_addr = INADDR_ANY;
+	//ServerAddress.sin_addr.S_un.S_addr = INADDR_ANY;  //IP地址
 	//INADDR_ANY是一个特殊的宏常量，表示绑定到所有可用的网络接口上。
 
 	//绑定套接字
 	//套接字与网卡关联
 	
 	//将服务器监听套接字与指定的 IP 地址和端口号绑定在一起
-	IsOk = bind(m_listenSocket,
+	BOOL bindOk = bind(m_listenSocket,
 		(sockaddr*)&ServerAddress,
 		sizeof(ServerAddress));
 
-	if (IsOk == SOCKET_ERROR)
+	if (bindOk == SOCKET_ERROR)
 	{
+		IsOk = FALSE;
 		goto Error;
 	}
 
 	//保安上班监听
 	//将服务器的监听套接字置为监听状态
-	IsOk = listen(m_listenSocket, SOMAXCONN);   //监听能力
-	if (IsOk == SOCKET_ERROR)
+	BOOL listenOk = listen(m_listenSocket, SOMAXCONN);   //监听能力
+	if (listenOk == SOCKET_ERROR)
 	{
+		IsOk = FALSE;
 		goto Error;
 	}
 	
@@ -184,10 +189,11 @@ BOOL CIocpServer::ServerRun(USHORT ListenPort)
 	}
 
 	IocpInit();
+	return TRUE;
 
-Error:;
+Error:
 
-	if (IsOk != TRUE)
+	if (IsOk == FALSE)
 	{
 		if (m_listenSocket != INVALID_SOCKET)
 		{
@@ -255,12 +261,14 @@ DWORD WINAPI CIocpServer::ListenThreadProcedure(LPVOID ParameterData)
 			break;
 		}
 
+		v2 = WaitForSingleObject(v1->m_ListenEventHandle, 100);
 		//等待监听事件授信(监听套接字授信)
-		v2 = WSAWaitForMultipleEvents(1,
-			&v1->m_ListenEventHandle,          //他其实网络事件   ListenSocket   
-			FALSE,							   //true 全部信号授信后 才能向下执行 
-			100,
-			FALSE);
+		//v2 = WSAWaitForMultipleEvents(1,
+		//	&v1->m_ListenEventHandle,          //他其实网络事件   ListenSocket   
+		//	FALSE,							   //true 全部信号授信后 才能向下执行 
+		//	100,
+		//	FALSE);
+
 		if (v2 == WSA_WAIT_TIMEOUT)
 		{
 			//该事件没有授信
@@ -317,8 +325,7 @@ DWORD WINAPI CIocpServer::ListenThreadProcedure(LPVOID ParameterData)
 
 void CIocpServer::OnAccept()
 {
-
-	MessageBox(NULL, _T("ListenThreadProcedure"), NULL, 0);
+	MessageBox(NULL, _T("OnAccept"), NULL, 0);
 }
 
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
