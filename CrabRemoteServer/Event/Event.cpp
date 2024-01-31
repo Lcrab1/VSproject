@@ -16,6 +16,31 @@ DWORD WINAPI ThreadProcedure1(LPVOID ParameterData);
 int _tmain()//主thread
 {
 
+
+
+	HANDLE v10 = NULL;
+	v10 = CreateEvent(NULL, true, true, NULL);	//创建一个授信的时间
+	//第三个参数 若为true，说明初始状态为授信，若为false，说明初始状态为非授信
+	DWORD v20 = WaitForSingleObject(v10, INFINITE);
+	//若第二个参数为false，那么系统在执行完WaitForSingleObject后，会将授信状态改为非授信状态
+	//授信状态被改为非授信状态，那么WaitForSingleObject此时就会永久等待
+
+	//若第二个参数为true，WaitForSingleObject不会修改授信状态，始终处于授信
+	//v20 = WaitForSingleObject(v10, INFINITE);
+	_tprintf(_T("Hello World\r\n"));
+
+	//若第二个参数为true，那么需要手动改变授信状态,WaitForsingleObject并不会
+	//手动改变授信可以用 ResetEvent 将授信 改为非授信
+	ResetEvent(v10);
+	v20 = WaitForSingleObject(v10, INFINITE);
+	_tprintf(_T("Hello World\r\n"));
+
+
+
+
+
+
+
 	int i = 0;
 
 	int x = 10000;

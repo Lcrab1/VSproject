@@ -17,6 +17,7 @@ CIocpServer::CIocpServer()
 	}
 	m_listenSocket = INVALID_SOCKET;
 	m_ListenThreadHandle = INVALID_HANDLE_VALUE;
+	m_ListenEventHandle = NULL;
 
 	//初始化线程池
 	m_ThreadsPoolMin = 0;
@@ -46,14 +47,26 @@ CIocpServer::~CIocpServer()
 	CloseHandle(m_ListenThreadHandle);
 	m_ListenThreadHandle = INVALID_HANDLE_VALUE;
 
-
+	//监听套接字的关闭
 	if (m_listenSocket != INVALID_SOCKET)
 	{
 		closesocket(m_listenSocket);
 		m_listenSocket = INVALID_SOCKET;
 	}
 
+	//监听事件的关闭
+	if (m_ListenEventHandle != NULL)
+	{
+		CloseHandle(m_ListenEventHandle);
+		m_ListenEventHandle = NULL;
+	}
 
+	//退出监听事件的关闭
+	if (m_KillEventHandle != NULL)
+	{
+		CloseHandle(m_KillEventHandle);
+		m_KillEventHandle = NULL;
+	}
 
 	m_ThreadsPoolMin = 0;
 	m_ThreadsPoolMax = 0;
@@ -82,6 +95,7 @@ BOOL CIocpServer::ServerRun(USHORT ListenPort)
 	SOCKADDR_IN	ServerAddress;   //结构体
 
 	//创建事件对象 最后一个参数表示事件的名称,传入NULL代表传入的是一个匿名对象
+	//Kernel32.dll
 	m_KillEventHandle = CreateEvent(NULL, FALSE, FALSE, NULL);
 
 	if (m_KillEventHandle == NULL)
@@ -89,15 +103,6 @@ BOOL CIocpServer::ServerRun(USHORT ListenPort)
 		return FALSE;
 	}
 
-	//创建监听套接字Address Family  
-
-	//应用   Http  
-	//表示
-	//会话
-	//传输   TCP(Stream)  UDP(datagram)   
-	//网络   IP  寻址
-	//数据链路
-	//物理
 	
 
 	//创建一个监听事件
@@ -107,6 +112,29 @@ BOOL CIocpServer::ServerRun(USHORT ListenPort)
 		goto Error;
 	}
 
+	//WSA开头  创建一个网络的事件 
+	//Ws2_32.dll
+	m_ListenEventHandle = WSACreateEvent();   //NULL true,false NULL												 										  
+	//The WSACreateEvent function creates a manual-reset event object with an initial state of nonsignaled.
+	//创建一个监听事件(网络代码)(Ws2_32.dll)
+
+	if (m_ListenEventHandle == WSA_INVALID_EVENT)
+	{
+		goto Error;
+	}
+
+	//将监听套接字与事件进行关联并授予FD_ACCEPT与的FD_CLOSE属性
+	 IsOk = WSAEventSelect(m_listenSocket,
+		m_ListenEventHandle,
+		FD_ACCEPT | FD_CLOSE);
+	/*FD_ACCEPT表示有新的连接请求，FD_CLOSE表示连接已经关闭。
+	当这些事件中的任何一个发生时，m_ListenEventHandle事件对象就会被设置为信号状态。*/
+	 
+	if (IsOk == SOCKET_ERROR)
+	{
+		goto Error;
+	}
+	
 	//初始化Server端网卡
 
 	//通信端口 0 - 2^16-1
@@ -217,7 +245,7 @@ DWORD WINAPI CIocpServer::ListenThreadProcedure(LPVOID ParameterData)
 {
 	CIocpServer* v1 = (CIocpServer*)ParameterData;
 	DWORD    v2 = 0;
-
+	WSANETWORKEVENTS NetWorkEvents;
 	while (1)
 	{
 		v2 = WaitForSingleObject(v1->m_KillEventHandle, 100);
@@ -227,12 +255,70 @@ DWORD WINAPI CIocpServer::ListenThreadProcedure(LPVOID ParameterData)
 			break;
 		}
 
+		//等待监听事件授信(监听套接字授信)
+		v2 = WSAWaitForMultipleEvents(1,
+			&v1->m_ListenEventHandle,          //他其实网络事件   ListenSocket   
+			FALSE,							   //true 全部信号授信后 才能向下执行 
+			100,
+			FALSE);
+		if (v2 == WSA_WAIT_TIMEOUT)
+		{
+			//该事件没有授信
+			continue;
+		}
+
+		//Accept 网络事件    客户端链接服务端 
+		//Close  网络事件    客户端断开链接
+		
+		//发生了FD_ACCEPT或者FD_CLOSE事件
+		
+		////如果事件授信我们就将该事件转换成一个网络事件进行判断
+		v2 = WSAEnumNetworkEvents(v1->m_listenSocket,
+			v1->m_ListenEventHandle,
+			&NetWorkEvents);   //判断的结果存储在NetWorkEvents变量中
+
+
+		if (v2 == SOCKET_ERROR)
+		{
+			//日志处理
+			break;
+		}
+		if (NetWorkEvents.lNetworkEvents & FD_ACCEPT)   //监听套接字授信
+		{
+			if (NetWorkEvents.iErrorCode[FD_ACCEPT_BIT] == 0)
+			{
+
+				//处理客户端上线请求
+				v1->OnAccept();
+			}
+			else
+			{
+				break;
+			}
+
+		}
+		else
+		{
+			//家长离开 客户端下线
+
+			//当删除一个用户是代码会执行到这里不要在这里退出循环
+			//break;
+		}
 
 	}
-	TCHAR testListenThreadsExit[0x1000] = { 0 };
-	_stprintf_s(testListenThreadsExit, _T("ThreadIdentity:%d"), GetCurrentThreadId());
-	MessageBox(NULL, _T("ListenThreadProcedure"), testListenThreadsExit, 0);
+
+
+
+	//TCHAR testListenThreadsExit[0x1000] = { 0 };
+	//_stprintf_s(testListenThreadsExit, _T("ThreadIdentity:%d"), GetCurrentThreadId());
+	//MessageBox(NULL, _T("ListenThreadProcedure"), testListenThreadsExit, 0);
 	return 0;
+}
+
+void CIocpServer::OnAccept()
+{
+
+	MessageBox(NULL, _T("ListenThreadProcedure"), NULL, 0);
 }
 
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)

@@ -88,6 +88,19 @@ BOOL CGameDlg::PreTranslateMessage(MSG* pMsg)
 		CRect rectPictureCtrl;
 		m_player.GetWindowRect(&rectPictureCtrl);
 		ScreenToClient(&rectPictureCtrl);
+
+		// 擦除原来的图像
+		CClientDC dc(this);
+		CDC memDC;
+		if (memDC.CreateCompatibleDC(&dc))
+		{
+			CBitmap bmp;
+			bmp.LoadBitmap(IDB_BACKGROUND_BMP);  // 加载背景图片
+			memDC.SelectObject(&bmp);
+			dc.BitBlt(rectPictureCtrl.left, rectPictureCtrl.top, rectPictureCtrl.Width(), rectPictureCtrl.Height(),
+				&memDC, 0, 0, SRCCOPY);
+		}
+
 		switch (pMsg->wParam)
 		{
 		case 'W':

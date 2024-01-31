@@ -16,6 +16,7 @@ public:
 	BOOL IocpInit();
 	//线程回调函数的创建法2
 	static DWORD WINAPI ListenThreadProcedure(LPVOID ParameterData);
+	void OnAccept();
 
 public:
 	//监听套接字
@@ -33,6 +34,7 @@ public:
 
 	//监听线程
 	HANDLE m_ListenThreadHandle;   
+	HANDLE m_ListenEventHandle;
 
 	BOOL m_Working;
 	HANDLE m_KillEventHandle;    //当该事件对象授信 销毁资源
