@@ -27,6 +27,8 @@ void CGameDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_GAME_BACKGROUND, m_background);
 	DDX_Control(pDX, IDC_PLAYER, m_player);
 	DDX_Control(pDX, IDC_BATTERY_1, m_battery1);
+	DDX_Control(pDX, IDC_BATTERY_2, m_battery2);
+	DDX_Control(pDX, IDC_BATTERY_3, m_battery3);
 }
 
 void CGameDlg::gameInit()
@@ -35,8 +37,12 @@ void CGameDlg::gameInit()
 
 	m_background.SetWindowPos(NULL, 0, 0, 1400, 600, SWP_NOMOVE | SWP_NOZORDER);
 
-
-
+	m_battery1.SetWindowPos(NULL, 0, 0, 130, 130, SWP_NOMOVE | SWP_NOZORDER);
+	m_battery2.SetWindowPos(NULL, 0, 0, 130, 130, SWP_NOMOVE | SWP_NOZORDER);
+	m_battery3.SetWindowPos(NULL, 0, 0, 130, 130, SWP_NOMOVE | SWP_NOZORDER);
+	MessageBox( "爱护环境人人有责！", "提示", 0);
+	MessageBox( "您可以使用WASD移动，在废弃电池附近按下空格即可回收电池!", "提示", 0);
+	MessageBox( "收集完所有的废弃电池即可完成游戏！", "提示", 0);
 
 
 
@@ -92,16 +98,16 @@ BOOL CGameDlg::PreTranslateMessage(MSG* pMsg)
 		switch (pMsg->wParam)
 		{
 		case 'W':
-			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top - 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top - 30, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 			return TRUE;
 		case 'A':
-			m_player.SetWindowPos(NULL, rectPictureCtrl.left - 10, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left - 30, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 			return TRUE;
 		case 'S':
-			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top + 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top + 30, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 			return TRUE;
 		case 'D':
-			m_player.SetWindowPos(NULL, rectPictureCtrl.left + 10, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left + 30, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 			return TRUE;
 		case VK_SPACE:  // 处理空格键的事件
 		{
@@ -112,6 +118,35 @@ BOOL CGameDlg::PreTranslateMessage(MSG* pMsg)
 			if (intersection.IntersectRect(&rectPictureCtrl, &rectPic2))  // 检查两个矩形是否有交集
 			{
 				m_battery1.ShowWindow(SW_HIDE);  // 隐藏ID_PIC2图片
+				m_count++;
+				if (m_count == 3) {
+					MessageBox("提示", "恭喜您！收集完了所有的电池！", 0);
+					exit(0);
+				}
+			}
+
+			m_battery2.GetWindowRect(&rectPic2);  // 获取ID_PIC2图片的位置
+			ScreenToClient(&rectPic2);
+			if (intersection.IntersectRect(&rectPictureCtrl, &rectPic2))  // 检查两个矩形是否有交集
+			{
+				m_battery2.ShowWindow(SW_HIDE);  // 隐藏ID_PIC2图片
+				m_count++;
+				if (m_count == 3) {
+					MessageBox( "恭喜您！收集完了所有的电池！", "提示", 0);
+					exit(0);
+				}
+			}
+
+			m_battery3.GetWindowRect(&rectPic2);  // 获取ID_PIC2图片的位置
+			ScreenToClient(&rectPic2);
+			if (intersection.IntersectRect(&rectPictureCtrl, &rectPic2))  // 检查两个矩形是否有交集
+			{
+				m_battery3.ShowWindow(SW_HIDE);  // 隐藏ID_PIC2图片
+				m_count++;
+				if (m_count == 3) {
+					MessageBox("提示", "恭喜您！收集完了所有的电池！", 0);
+					exit(0);
+				}
 			}
 			return TRUE;  // 返回TRUE表示消息已被处理
 		}
@@ -128,16 +163,16 @@ BOOL CGameDlg::PreTranslateMessage(MSG* pMsg)
 		switch (pMsg->wParam)
 		{
 		case 'W':
-			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top - 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top - 30, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 			return TRUE;
 		case 'A':
-			m_player.SetWindowPos(NULL, rectPictureCtrl.left - 10, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left - 30, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 			return TRUE;
 		case 'S':
-			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top + 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top + 30, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 			return TRUE;
 		case 'D':
-			m_player.SetWindowPos(NULL, rectPictureCtrl.left + 10, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left + 30, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 			return TRUE;
 		case VK_SPACE:  // 处理空格键的事件
 		{
@@ -148,7 +183,35 @@ BOOL CGameDlg::PreTranslateMessage(MSG* pMsg)
 			if (intersection.IntersectRect(&rectPictureCtrl, &rectPic2))  // 检查两个矩形是否有交集
 			{
 				m_battery1.ShowWindow(SW_HIDE);  // 隐藏ID_PIC2图片
+				m_count++;
+				if (m_count == 3) {
+					MessageBox("提示", "恭喜您！收集完了所有的电池！", 0);
+				}
 			}
+
+			m_battery2.GetWindowRect(&rectPic2);  // 获取ID_PIC2图片的位置
+			ScreenToClient(&rectPic2);
+			if (intersection.IntersectRect(&rectPictureCtrl, &rectPic2))  // 检查两个矩形是否有交集
+			{
+				m_battery2.ShowWindow(SW_HIDE);  // 隐藏ID_PIC2图片
+				m_count++;
+				if (m_count == 3) {
+					MessageBox("提示", "恭喜您！收集完了所有的电池！", 0);
+				}
+			}
+
+			m_battery3.GetWindowRect(&rectPic2);  // 获取ID_PIC2图片的位置
+			ScreenToClient(&rectPic2);
+			if (intersection.IntersectRect(&rectPictureCtrl, &rectPic2))  // 检查两个矩形是否有交集
+			{
+				m_battery3.ShowWindow(SW_HIDE);  // 隐藏ID_PIC2图片
+				m_count++;
+				if (m_count == 3) {
+					MessageBox( "提示", "恭喜您！收集完了所有的电池！",0);
+				}
+			}
+
+
 			return TRUE;  // 返回TRUE表示消息已被处理
 		}
 		default:

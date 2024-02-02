@@ -33,4 +33,8 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnStnClickedBattery1();
 	CStatic m_battery1;
+	CStatic m_battery2;
+	CStatic m_battery3;
+
+	int m_count = 0;
 };
