@@ -31,4 +31,6 @@ public:
 
 //	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnStnClickedBattery1();
+	CStatic m_battery1;
 };

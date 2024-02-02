@@ -26,6 +26,7 @@ void CGameDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_GAME_BACKGROUND, m_background);
 	DDX_Control(pDX, IDC_PLAYER, m_player);
+	DDX_Control(pDX, IDC_BATTERY_1, m_battery1);
 }
 
 void CGameDlg::gameInit()
@@ -46,6 +47,7 @@ void CGameDlg::gameInit()
 BEGIN_MESSAGE_MAP(CGameDlg, CDialogEx)
 	ON_STN_CLICKED(IDC_GAME_BACKGROUND, &CGameDlg::OnStnClickedGameBackground)
 	ON_WM_KEYDOWN(IDC_GAME_BACKGROUND, &CGameDlg::PreTranslateMessage)
+	ON_STN_CLICKED(IDC_BATTERY_1, &CGameDlg::OnStnClickedBattery1)
 END_MESSAGE_MAP()
 
 
@@ -101,6 +103,18 @@ BOOL CGameDlg::PreTranslateMessage(MSG* pMsg)
 		case 'D':
 			m_player.SetWindowPos(NULL, rectPictureCtrl.left + 10, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 			return TRUE;
+		case VK_SPACE:  // 处理空格键的事件
+		{
+			CRect rectPic2;
+			m_battery1.GetWindowRect(&rectPic2);  // 获取ID_PIC2图片的位置
+			ScreenToClient(&rectPic2);
+			CRect intersection;
+			if (intersection.IntersectRect(&rectPictureCtrl, &rectPic2))  // 检查两个矩形是否有交集
+			{
+				m_battery1.ShowWindow(SW_HIDE);  // 隐藏ID_PIC2图片
+			}
+			return TRUE;  // 返回TRUE表示消息已被处理
+		}
 		default:
 			return TRUE;  // 返回TRUE表示消息已被处理
 		}
@@ -125,6 +139,18 @@ BOOL CGameDlg::PreTranslateMessage(MSG* pMsg)
 		case 'D':
 			m_player.SetWindowPos(NULL, rectPictureCtrl.left + 10, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 			return TRUE;
+		case VK_SPACE:  // 处理空格键的事件
+		{
+			CRect rectPic2;
+			m_battery1.GetWindowRect(&rectPic2);  // 获取ID_PIC2图片的位置
+			ScreenToClient(&rectPic2);
+			CRect intersection;
+			if (intersection.IntersectRect(&rectPictureCtrl, &rectPic2))  // 检查两个矩形是否有交集
+			{
+				m_battery1.ShowWindow(SW_HIDE);  // 隐藏ID_PIC2图片
+			}
+			return TRUE;  // 返回TRUE表示消息已被处理
+		}
 		default:
 			return TRUE;  // 返回TRUE表示消息已被处理
 		}
@@ -133,4 +159,10 @@ BOOL CGameDlg::PreTranslateMessage(MSG* pMsg)
 
 	return CDialogEx::PreTranslateMessage(pMsg);
 	
+}
+
+
+void CGameDlg::OnStnClickedBattery1()
+{
+	// TODO: 在此添加控件通知处理程序代码
 }
