@@ -28,6 +28,9 @@
     <Filter Include="通信核心">
       <UniqueIdentifier>{b0e884f9-d96c-4ff3-8482-f8bdc1775d58}</UniqueIdentifier>
     </Filter>
+    <Filter Include="数据结构">
+      <UniqueIdentifier>{c0b7d427-d171-44df-a6d9-41b4f000be9a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -60,6 +63,9 @@
     <ClInclude Include="IocpServer.h">
       <Filter>通信核心</Filter>
     </ClInclude>
+    <ClInclude Include="CArray.h">
+      <Filter>数据结构</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -82,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="IocpServer.cpp">
       <Filter>通信核心</Filter>
+    </ClCompile>
+    <ClCompile Include="CArray.cpp">
+      <Filter>数据结构</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -325,7 +325,55 @@ DWORD WINAPI CIocpServer::ListenThreadProcedure(LPVOID ParameterData)
 
 void CIocpServer::OnAccept()
 {
-	MessageBox(NULL, _T("OnAccept"), NULL, 0);
+	//MessageBox(NULL, _T("OnAccept()"), NULL, 0);   
+
+	//客户端上线
+	int			Result = 0;
+
+	//保存上线用户IP地址
+	SOCKET		ClientSocket = INVALID_SOCKET;    //通信套接字
+	SOCKADDR_IN	ClientAddress = { 0 };            //存储客户端地址
+	int			ClientAddressLength = sizeof(SOCKADDR_IN);
+
+	//通过我们的监听套接字来生成一个与之信号通信的套接字
+
+
+	//服务器针对该次客户端链接请求的响应的通信套接字connnect 请求的响应
+	ClientSocket = accept(m_listenSocket,
+		(sockaddr*)&ClientAddress,
+		&ClientAddressLength);
+
+
+	if (ClientSocket == SOCKET_ERROR)
+	{
+		return;
+	}
+
+
+	//我们在这里为每一个到达的信号维护了一个与之关联的数据结构这里简称为用户的上下背景文
+	PCONTEXT_OBJECT ContextObject = AllocateContextObject();
+
+	if (ContextObject == NULL)
+	{
+
+		closesocket(ClientSocket);   //关闭链接
+		ClientSocket = INVALID_SOCKET;
+		return;
+	}
+
+
+	//成员赋值
+	ContextObject->clientSocket = ClientSocket;  //Send Recv
+}
+
+PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
+{
+	return NULL;
+}
+
+PCONTEXT_OBJECT CIocpServer::RemoveContextObject()
+{
+	return NULL;
 }
 
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)

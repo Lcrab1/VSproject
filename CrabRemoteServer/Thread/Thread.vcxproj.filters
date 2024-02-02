@@ -18,5 +18,8 @@
     <ClCompile Include="Thread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Thread2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
