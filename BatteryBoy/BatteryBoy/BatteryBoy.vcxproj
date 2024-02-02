@@ -216,6 +216,7 @@
     <Image Include="Image\gameBackground1.bmp" />
     <Image Include="Image\gamestart.bmp" />
     <Image Include="Image\坚果.bmp" />
+    <Image Include="Image\坚果1.bmp" />
     <Image Include="res\BatteryBoy.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

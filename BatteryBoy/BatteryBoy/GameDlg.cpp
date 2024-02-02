@@ -82,36 +82,55 @@ void CGameDlg::OnStnClickedGameBackground()
 
 BOOL CGameDlg::PreTranslateMessage(MSG* pMsg)
 {
-	// TODO: 在此添加专用代码和/或调用基类
 	if (pMsg->message == WM_KEYUP)
 	{
 		CRect rectPictureCtrl;
 		m_player.GetWindowRect(&rectPictureCtrl);
 		ScreenToClient(&rectPictureCtrl);
-
-		// 擦除原来的图像
-		CClientDC dc(this);
-		CDC memDC;
-		if (memDC.CreateCompatibleDC(&dc))
-		{
-			CBitmap bmp;
-			bmp.LoadBitmap(IDB_BACKGROUND_BMP);  // 加载背景图片
-			memDC.SelectObject(&bmp);
-			dc.BitBlt(rectPictureCtrl.left, rectPictureCtrl.top, rectPictureCtrl.Width(), rectPictureCtrl.Height(),
-				&memDC, 0, 0, SRCCOPY);
-		}
-
 		switch (pMsg->wParam)
 		{
 		case 'W':
-			rectPictureCtrl.top -= 10;
-			m_player.MoveWindow(&rectPictureCtrl, TRUE);
-			break;
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top - 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			return TRUE;
+		case 'A':
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left - 10, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			return TRUE;
+		case 'S':
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top + 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			return TRUE;
+		case 'D':
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left + 10, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			return TRUE;
 		default:
-			break;
+			return TRUE;  // 返回TRUE表示消息已被处理
 		}
+		
+	}
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		CRect rectPictureCtrl;
+		m_player.GetWindowRect(&rectPictureCtrl);
+		ScreenToClient(&rectPictureCtrl);
+		switch (pMsg->wParam)
+		{
+		case 'W':
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top - 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			return TRUE;
+		case 'A':
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left - 10, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			return TRUE;
+		case 'S':
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left, rectPictureCtrl.top + 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			return TRUE;
+		case 'D':
+			m_player.SetWindowPos(NULL, rectPictureCtrl.left + 10, rectPictureCtrl.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			return TRUE;
+		default:
+			return TRUE;  // 返回TRUE表示消息已被处理
+		}
+
 	}
 
-		return CDialogEx::PreTranslateMessage(pMsg);
+	return CDialogEx::PreTranslateMessage(pMsg);
 	
 }

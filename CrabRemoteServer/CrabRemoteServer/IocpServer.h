@@ -50,7 +50,7 @@ public:
 	void OnAccept();
 
 	PCONTEXT_OBJECT AllocateContextObject();
-	PCONTEXT_OBJECT RemoveContextObject();
+	VOID RemoveContextObject();
 public:
 	//监听套接字
 	SOCKET m_listenSocket;

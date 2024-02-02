@@ -371,9 +371,9 @@ PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
 	return NULL;
 }
 
-PCONTEXT_OBJECT CIocpServer::RemoveContextObject()
+VOID CIocpServer::RemoveContextObject()
 {
-	return NULL;
+	return;
 }
 
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
