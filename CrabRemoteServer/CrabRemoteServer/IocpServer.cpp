@@ -380,15 +380,18 @@ void CIocpServer::OnAccept()
 	//成员赋值
 	ContextObject->clientSocket = ClientSocket;  //Send Recv
 
-		//关联内存
+	//关联内存
+	//buf是个指针
 	ContextObject->bufferReceive.buf = (char*)ContextObject->bufferData;
 	ContextObject->bufferReceive.len = sizeof(ContextObject->bufferData);
 
-
+	
 
 	//将生成的通信套接字与完成端口句柄相关联
 	HANDLE Handle = CreateIoCompletionPort((HANDLE)ClientSocket,
 		m_CompletionPortHandle, (ULONG_PTR)ContextObject, 0);     //指针 完成Key
+	//关联成功，返回值是m_CompletionPortHandle
+	//关联失败，返回值是NULL
 
 
 	if (Handle != m_CompletionPortHandle)
@@ -411,17 +414,18 @@ void CIocpServer::OnAccept()
 	//设置套接字的选项卡 Set KeepAlive 开启保活机制 SO_KEEPALIVE 
 	//保持连接检测对方主机是否崩溃如果2小时内在此套接口的任一方向都没
 	//有数据交换，TCP就自动给对方 发一个保持存活
-	m_KeepAliveTime = 3;
+	m_KeepAliveTime = 1000*60*3;
 	const BOOL IsKeepAlive = TRUE;
 	if (setsockopt(ContextObject->clientSocket, SOL_SOCKET, SO_KEEPALIVE, (char*)&IsKeepAlive, sizeof(IsKeepAlive)) != 0)
 	{
 	}
 
 	//设置超时详细信息
-	tcp_keepalive	KeepAlive;
-	KeepAlive.onoff = 1; // 启用保活
+	tcp_keepalive	KeepAlive;			
+	KeepAlive.onoff = 1; // 启用保活					 //以下两个数据的单位都是毫秒
 	KeepAlive.keepalivetime = m_KeepAliveTime;       //超过3分钟没有数据，就发送探测包
 	KeepAlive.keepaliveinterval = 1000 * 10;         //重试间隔为10秒 Resend if No-Reply
+	//控制套接字行为
 	WSAIoctl
 	(
 		ContextObject->clientSocket,
@@ -450,8 +454,10 @@ PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
 
 	//进入一个临界区
 		//进入临界区
+	//RAII技术
 	_CCriticalSection CriticalSection(&m_CriticalSection);   //自定义封装了一个线程同步关键段工具
 	//判断内存池是否为空
+
 	//内存池
 	if (m_FreeContextList.IsEmpty() == FALSE)
 	{
@@ -462,6 +468,7 @@ PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
 	{
 		ContextObject = new CONTEXT_OBJECT;   //第一次客户端上下背景文生成的时候
 	}
+
 	if (ContextObject != NULL)
 	{
 		//初始化成员变量

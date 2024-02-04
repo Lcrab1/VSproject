@@ -15,8 +15,10 @@ using namespace std;
 typedef struct _CONTEXT_OBJECT_
 {
 	SOCKET clientSocket;
+
 	WSABUF bufferReceive;
 	WSABUF bufferSend;
+
 	char bufferData[PACKET_LENGTH];
 
 
@@ -80,8 +82,8 @@ public:
 	HANDLE m_KillEventHandle;    //当该事件对象授信 销毁资源
 
 	CRITICAL_SECTION  m_CriticalSection;    //构造函数 析构函数中进行 初始化销毁
-	CONTEXT_LIST  m_FreeContextList;    //内存池模板
-	CONTEXT_LIST  m_ConnectContextList;   //上线用户上下背景文列表
+	CONTEXT_LIST  m_FreeContextList;        //内存池模板
+	CONTEXT_LIST  m_ConnectContextList;     //上线用户上下背景文列表
 
 	HANDLE m_CompletionPortHandle;          //完成端口句柄
 

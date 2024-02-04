@@ -3,6 +3,7 @@
 #include <iostream>
 using namespace std;
 //辅助关键段使用
+//RAII技术
 class _CCriticalSection
 {
 public:
