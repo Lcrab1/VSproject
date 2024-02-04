@@ -4,6 +4,7 @@
 #include <winsock2.h>    //通信Socket2  套接字  
 #include"CArray.h"
 #include"CriticalSection.h"
+#include <mstcpip.h>
 using namespace std;
 #pragma comment(lib,"Ws2_32.lib")   //kernel32.dll User32.dll  Ws2_32.dll 加载这个库为使用通信接口
 #define WORK_THREAD_MAX 2
@@ -83,4 +84,6 @@ public:
 	CONTEXT_LIST  m_ConnectContextList;   //上线用户上下背景文列表
 
 	HANDLE m_CompletionPortHandle;          //完成端口句柄
+
+	ULONG m_KeepAliveTime;
 };

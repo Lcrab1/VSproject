@@ -31,6 +31,8 @@ CIocpServer::CIocpServer()
 
 	m_KillEventHandle = NULL;
 	m_Working = TRUE;
+	InitializeCriticalSection(&m_CriticalSection);
+
 
 	m_CompletionPortHandle = INVALID_HANDLE_VALUE;
 
@@ -85,6 +87,11 @@ CIocpServer::~CIocpServer()
 	}
 	WSACleanup();	//释放Windows Sockets库所占用的资源，并终止对网络套接字的使用
 
+	if (m_CompletionPortHandle != INVALID_HANDLE_VALUE)
+	{
+		CloseHandle(m_CompletionPortHandle);
+		m_CompletionPortHandle = INVALID_HANDLE_VALUE;
+	}
 
 
 	//资源回收
@@ -208,6 +215,14 @@ Error:
 
 BOOL CIocpServer::IocpInit()
 {
+
+	m_CompletionPortHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
+
+	if (m_CompletionPortHandle == NULL)   //创建完成端口
+	{
+		return;
+	}
+
 	//定义一个官方结构
 	SYSTEM_INFO SystemInfo;
 	//获得PC中有几核
@@ -362,10 +377,71 @@ void CIocpServer::OnAccept()
 		ClientSocket = INVALID_SOCKET;
 		return;
 	}
-
-
 	//成员赋值
 	ContextObject->clientSocket = ClientSocket;  //Send Recv
+
+		//关联内存
+	ContextObject->bufferReceive.buf = (char*)ContextObject->bufferData;
+	ContextObject->bufferReceive.len = sizeof(ContextObject->bufferData);
+
+
+
+	//将生成的通信套接字与完成端口句柄相关联
+	HANDLE Handle = CreateIoCompletionPort((HANDLE)ClientSocket,
+		m_CompletionPortHandle, (ULONG_PTR)ContextObject, 0);     //指针 完成Key
+
+
+	if (Handle != m_CompletionPortHandle)
+	{
+
+		delete ContextObject;  //销毁对象
+		ContextObject = NULL;
+
+		if (ClientSocket != INVALID_SOCKET)
+		{
+			closesocket(ClientSocket);  //销毁套接字
+			ClientSocket = INVALID_SOCKET;
+		}
+
+		return;
+	}
+
+	//保活机制
+
+	//设置套接字的选项卡 Set KeepAlive 开启保活机制 SO_KEEPALIVE 
+	//保持连接检测对方主机是否崩溃如果2小时内在此套接口的任一方向都没
+	//有数据交换，TCP就自动给对方 发一个保持存活
+	m_KeepAliveTime = 3;
+	const BOOL IsKeepAlive = TRUE;
+	if (setsockopt(ContextObject->clientSocket, SOL_SOCKET, SO_KEEPALIVE, (char*)&IsKeepAlive, sizeof(IsKeepAlive)) != 0)
+	{
+	}
+
+	//设置超时详细信息
+	tcp_keepalive	KeepAlive;
+	KeepAlive.onoff = 1; // 启用保活
+	KeepAlive.keepalivetime = m_KeepAliveTime;       //超过3分钟没有数据，就发送探测包
+	KeepAlive.keepaliveinterval = 1000 * 10;         //重试间隔为10秒 Resend if No-Reply
+	WSAIoctl
+	(
+		ContextObject->clientSocket,
+		SIO_KEEPALIVE_VALS,
+		&KeepAlive,
+		sizeof(KeepAlive),
+		NULL,
+		0,
+		(unsigned long*)&IsKeepAlive,
+		0,
+		NULL
+	);
+
+	//在做服务器时，如果发生客户端网线或断电等非正常断开的现象，如果服务器没有设置SO_KEEPALIVE选项，
+	//则会一直不关闭SOCKET。因为上的的设置是默认两个小时时间太长了所以我们就修正这个值
+
+
+	_CCriticalSection CriticalSection(&m_CriticalSection);  //Stack Object
+	m_ConnectContextList.AddTail(ContextObject);     //插入到我们的内存列表中
+
 }
 
 PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
