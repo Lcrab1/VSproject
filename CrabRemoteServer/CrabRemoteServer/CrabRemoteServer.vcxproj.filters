@@ -66,6 +66,9 @@
     <ClInclude Include="CArray.h">
       <Filter>数据结构</Filter>
     </ClInclude>
+    <ClInclude Include="CriticalSection.h">
+      <Filter>通信核心</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -91,6 +94,9 @@
     </ClCompile>
     <ClCompile Include="CArray.cpp">
       <Filter>数据结构</Filter>
+    </ClCompile>
+    <ClCompile Include="CriticalSection.cpp">
+      <Filter>通信核心</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

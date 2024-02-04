@@ -32,6 +32,8 @@ CIocpServer::CIocpServer()
 	m_KillEventHandle = NULL;
 	m_Working = TRUE;
 
+	m_CompletionPortHandle = INVALID_HANDLE_VALUE;
+
 }
 CIocpServer::~CIocpServer()
 {
@@ -368,7 +370,28 @@ void CIocpServer::OnAccept()
 
 PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
 {
-	return NULL;
+	PCONTEXT_OBJECT ContextObject = NULL;   //分配一个对象
+
+	//进入一个临界区
+		//进入临界区
+	_CCriticalSection CriticalSection(&m_CriticalSection);   //自定义封装了一个线程同步关键段工具
+	//判断内存池是否为空
+	//内存池
+	if (m_FreeContextList.IsEmpty() == FALSE)
+	{
+		//内存池取内存
+		ContextObject = m_FreeContextList.RemoveHead();
+	}
+	else
+	{
+		ContextObject = new CONTEXT_OBJECT;   //第一次客户端上下背景文生成的时候
+	}
+	if (ContextObject != NULL)
+	{
+		//初始化成员变量
+		ContextObject->MemberInit();  //Clinet BufferData WSABuffer  WSABuffer  Array1 Array2 Array3
+	}
+	return ContextObject;
 }
 
 VOID CIocpServer::RemoveContextObject()

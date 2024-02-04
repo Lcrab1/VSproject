@@ -3,10 +3,13 @@
 #include <iostream>
 #include <winsock2.h>    //通信Socket2  套接字  
 #include"CArray.h"
+#include"CriticalSection.h"
 using namespace std;
 #pragma comment(lib,"Ws2_32.lib")   //kernel32.dll User32.dll  Ws2_32.dll 加载这个库为使用通信接口
 #define WORK_THREAD_MAX 2
 #define PACKET_LENGTH 0x2000
+
+
 
 typedef struct _CONTEXT_OBJECT_
 {
@@ -24,17 +27,20 @@ typedef struct _CONTEXT_OBJECT_
 	int DialogID;
 	HANDLE DialogHandle;
 
-	//VOID MemberInit()
-	//{
-	//	clientSocket = INVALID_SOCKET;
-	//	memset(bufferData, 0, sizeof(char) * PACKET_DATA);
-	//	memset(&bufferReceive, 0, sizeof(WSABUF));
-	//	memset(&bufferSend, 0, sizeof(WSABUF));
-	//	DialogHandle = NULL;
-	//	DialogID = 0;
+	VOID MemberInit()
+	{
+		clientSocket = INVALID_SOCKET;
+		memset(bufferData, 0, sizeof(char) * PACKET_LENGTH);
+		memset(&bufferReceive, 0, sizeof(WSABUF));
+		memset(&bufferSend, 0, sizeof(WSABUF));
+		DialogHandle = NULL;
+		DialogID = 0;
 
-	//}
+	}
 }CONTEXT_OBJECT,*PCONTEXT_OBJECT;
+
+
+typedef CList<PCONTEXT_OBJECT> 	CONTEXT_LIST;      //MFC的官方的类模板
 
 //线程回调函数的创建法1
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData);
@@ -71,4 +77,10 @@ public:
 
 	BOOL m_Working;
 	HANDLE m_KillEventHandle;    //当该事件对象授信 销毁资源
+
+	CRITICAL_SECTION  m_CriticalSection;    //构造函数 析构函数中进行 初始化销毁
+	CONTEXT_LIST  m_FreeContextList;    //内存池模板
+	CONTEXT_LIST  m_ConnectContextList;   //上线用户上下背景文列表
+
+	HANDLE m_CompletionPortHandle;          //完成端口句柄
 };
