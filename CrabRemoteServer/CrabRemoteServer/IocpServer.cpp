@@ -36,6 +36,9 @@ CIocpServer::CIocpServer()
 
 	m_CompletionPortHandle = INVALID_HANDLE_VALUE;
 
+	m_CurrentThreadsCount = 0;
+	m_BusyThreadsCount = 0;
+
 }
 CIocpServer::~CIocpServer()
 {
@@ -85,7 +88,7 @@ CIocpServer::~CIocpServer()
 		CloseHandle(m_WorkThreadHandle[i]);
 		m_WorkThreadHandle[i] = INVALID_HANDLE_VALUE;
 	}
-	WSACleanup();	//释放Windows Sockets库所占用的资源，并终止对网络套接字的使用
+	
 
 	if (m_CompletionPortHandle != INVALID_HANDLE_VALUE)
 	{
@@ -93,6 +96,8 @@ CIocpServer::~CIocpServer()
 		m_CompletionPortHandle = INVALID_HANDLE_VALUE;
 	}
 
+	DeleteCriticalSection(&m_CriticalSection);
+	WSACleanup();	//释放Windows Sockets库所占用的资源，并终止对网络套接字的使用
 
 	//资源回收
 }
@@ -253,7 +258,7 @@ BOOL CIocpServer::IocpInit()
 
 		if (m_WorkThreadHandle[i] == NULL)
 		{
-			//CloseHandle(m_CompletionPortHandle);
+			CloseHandle(m_CompletionPortHandle);
 			return FALSE;
 		}
 		m_WorkThreadsCount++;
@@ -278,13 +283,13 @@ DWORD WINAPI CIocpServer::ListenThreadProcedure(LPVOID ParameterData)
 			break;
 		}
 
-		v2 = WaitForSingleObject(v1->m_ListenEventHandle, 100);
+		//v2 = WaitForSingleObject(v1->m_ListenEventHandle, 100);
 		//等待监听事件授信(监听套接字授信)
-		//v2 = WSAWaitForMultipleEvents(1,
-		//	&v1->m_ListenEventHandle,          //他其实网络事件   ListenSocket   
-		//	FALSE,							   //true 全部信号授信后 才能向下执行 
-		//	100,
-		//	FALSE);
+		v2 = WSAWaitForMultipleEvents(1,
+			&v1->m_ListenEventHandle,          //他其实网络事件   ListenSocket   
+			FALSE,							   //true 全部信号授信后 才能向下执行 
+			100,
+			FALSE);
 
 		if (v2 == WSA_WAIT_TIMEOUT)
 		{
@@ -342,7 +347,7 @@ DWORD WINAPI CIocpServer::ListenThreadProcedure(LPVOID ParameterData)
 
 void CIocpServer::OnAccept()
 {
-	MessageBox(NULL, _T("OnAccept()"), NULL, 0);   
+	//MessageBox(NULL, _T("OnAccept()"), NULL, 0);   
 
 	//客户端上线
 	int			Result = 0;
@@ -414,7 +419,7 @@ void CIocpServer::OnAccept()
 	//设置套接字的选项卡 Set KeepAlive 开启保活机制 SO_KEEPALIVE 
 	//保持连接检测对方主机是否崩溃如果2小时内在此套接口的任一方向都没
 	//有数据交换，TCP就自动给对方 发一个保持存活
-	m_KeepAliveTime =1000*60*3;
+	m_KeepAliveTime =3;
 	const BOOL IsKeepAlive = TRUE;
 	if (setsockopt(ContextObject->clientSocket, SOL_SOCKET, SO_KEEPALIVE, (char*)&IsKeepAlive, sizeof(IsKeepAlive)) != 0)
 	{
@@ -460,7 +465,7 @@ void CIocpServer::OnAccept()
 		RemoveContextObject(ContextObject);
 		return;
 	}
-
+	PostReceive(ContextObject);
 }
 
 PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
@@ -492,9 +497,14 @@ PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
 	return ContextObject;
 }
 
-VOID CIocpServer::RemoveContextObject(PCONTEXT_OBJECT contextObject)
+PCONTEXT_OBJECT CIocpServer::RemoveContextObject(PCONTEXT_OBJECT contextObject)
 {
-	return;
+	return PCONTEXT_OBJECT();
+}
+
+VOID CIocpServer::PostReceive(PCONTEXT_OBJECT)
+{
+	return VOID();
 }
 
 BOOL CIocpServer::HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject, DWORD NumberOfBytesTransferred)
@@ -537,6 +547,8 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 
 	while (v1->m_Working == TRUE)
 	{
+		InterlockedDecrement(&v1->m_BusyThreadsCount);
+
 		BOOL IsOk2 = GetQueuedCompletionStatus(
 			CompletionPortHandle,
 			&NumberOfBytesTransferred,                    //完成多少数据
@@ -548,11 +560,12 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 
 
 		v3 = InterlockedIncrement(&v1->m_BusyThreadsCount);
+
 		//完成端口异常(强制退出)
-		if (!IsOk2 && LastError != WAIT_TIMEOUT)
+		if (!IsOk2   &&     LastError != WAIT_TIMEOUT)
 		{
 			//关闭线程
-			if (ContextObject && v1->m_Working == FALSE && NumberOfBytesTransferred == 0)
+			if (ContextObject &&   v1->m_Working == FALSE  &&   NumberOfBytesTransferred == 0)
 			{
 				//当对方的套机制发生了关闭	
 				v1->RemoveContextObject(ContextObject);
@@ -596,12 +609,10 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 			{
 				if (ContextObject == NULL)
 				{
-					{
 						if (v1->m_CurrentThreadsCount > v1->m_ThreadsPoolMin)
 						{
 							break;   //销毁一个线程
 						}
-					}
 					IsOk2 = TRUE;
 				}
 			}

@@ -13,11 +13,12 @@ using namespace std;
 
 enum PACKET_TYPE
 {
-	IO_INITIALIZE,
-	IO_RECEIVE,
-	IO_SEND,
-	IO_IDLE
+	IO_INITIALIZE,	//初始化数据包
+	IO_RECEIVE,		//接收数据包
+	IO_SEND,		//发送数据包
+	IO_IDLE			//没有数据包正在被使用，网络处于空闲状态
 };
+
 class COVERLAPPEDEX
 {
 public:
@@ -27,8 +28,8 @@ public:
 
 	COVERLAPPEDEX(PACKET_TYPE PackType)
 	{
-		ZeroMemory(this, sizeof(COVERLAPPEDEX));
-		m_PackType = PackType;
+		ZeroMemory(this, sizeof(COVERLAPPEDEX));	//将整个COVERLAPPEDEX的值清零
+		m_PackType = PackType;						//设置 m_PackType的状态
 	}
 };
 
@@ -80,8 +81,9 @@ public:
 	void OnAccept();
 
 	PCONTEXT_OBJECT AllocateContextObject();
-	VOID RemoveContextObject(PCONTEXT_OBJECT contextObject);
+	PCONTEXT_OBJECT RemoveContextObject(PCONTEXT_OBJECT contextObject);
 
+	VOID PostReceive(PCONTEXT_OBJECT);
 	BOOL HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject,
 		DWORD NumberOfBytesTransferred);
 public:
