@@ -11,6 +11,27 @@ using namespace std;
 #define PACKET_LENGTH 0x2000
 
 
+enum PACKET_TYPE
+{
+	IO_INITIALIZE,
+	IO_RECEIVE,
+	IO_SEND,
+	IO_IDLE
+};
+class COVERLAPPEDEX
+{
+public:
+
+	OVERLAPPED			m_Overlapped;   //真正的重叠结构  当前异步IO请求得到完成我们的代码能够响应
+	PACKET_TYPE			m_PackType;     //枚举  4  4 
+
+	COVERLAPPEDEX(PACKET_TYPE PackType)
+	{
+		ZeroMemory(this, sizeof(COVERLAPPEDEX));
+		m_PackType = PackType;
+	}
+};
+
 
 typedef struct _CONTEXT_OBJECT_
 {
@@ -59,7 +80,10 @@ public:
 	void OnAccept();
 
 	PCONTEXT_OBJECT AllocateContextObject();
-	VOID RemoveContextObject();
+	VOID RemoveContextObject(PCONTEXT_OBJECT contextObject);
+
+	BOOL HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject,
+		DWORD NumberOfBytesTransferred);
 public:
 	//监听套接字
 	SOCKET m_listenSocket;
@@ -88,4 +112,7 @@ public:
 	HANDLE m_CompletionPortHandle;          //完成端口句柄
 
 	ULONG m_KeepAliveTime;
+
+	volatile long m_CurrentThreadsCount;
+	volatile long m_BusyThreadsCount;
 };

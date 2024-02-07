@@ -220,7 +220,7 @@ BOOL CIocpServer::IocpInit()
 
 	if (m_CompletionPortHandle == NULL)   //创建完成端口
 	{
-		return;
+		return FALSE;
 	}
 
 	//定义一个官方结构
@@ -342,11 +342,11 @@ DWORD WINAPI CIocpServer::ListenThreadProcedure(LPVOID ParameterData)
 
 void CIocpServer::OnAccept()
 {
-	//MessageBox(NULL, _T("OnAccept()"), NULL, 0);   
+	MessageBox(NULL, _T("OnAccept()"), NULL, 0);   
 
 	//客户端上线
 	int			Result = 0;
-
+	BOOL        Ok;
 	//保存上线用户IP地址
 	SOCKET		ClientSocket = INVALID_SOCKET;    //通信套接字
 	SOCKADDR_IN	ClientAddress = { 0 };            //存储客户端地址
@@ -414,7 +414,7 @@ void CIocpServer::OnAccept()
 	//设置套接字的选项卡 Set KeepAlive 开启保活机制 SO_KEEPALIVE 
 	//保持连接检测对方主机是否崩溃如果2小时内在此套接口的任一方向都没
 	//有数据交换，TCP就自动给对方 发一个保持存活
-	m_KeepAliveTime = 1000*60*3;
+	m_KeepAliveTime =1000*60*3;
 	const BOOL IsKeepAlive = TRUE;
 	if (setsockopt(ContextObject->clientSocket, SOL_SOCKET, SO_KEEPALIVE, (char*)&IsKeepAlive, sizeof(IsKeepAlive)) != 0)
 	{
@@ -445,6 +445,21 @@ void CIocpServer::OnAccept()
 
 	_CCriticalSection CriticalSection(&m_CriticalSection);  //Stack Object
 	m_ConnectContextList.AddTail(ContextObject);     //插入到我们的内存列表中
+
+	COVERLAPPEDEX* OverlappedEx = new COVERLAPPEDEX(IO_INITIALIZE);
+
+	Ok = FALSE;
+	//向完成端口中投递一个请求
+	//工作线程会等待完成端口的完成状态
+	Ok = PostQueuedCompletionStatus(m_CompletionPortHandle,
+		0, (ULONG_PTR)ContextObject, &OverlappedEx->m_Overlapped);  //自己向自己的完成端口投递请求
+
+	if ((!Ok && GetLastError() != ERROR_IO_PENDING))
+	{
+		//如果投递失败
+		RemoveContextObject(ContextObject);
+		return;
+	}
 
 }
 
@@ -477,19 +492,154 @@ PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
 	return ContextObject;
 }
 
-VOID CIocpServer::RemoveContextObject()
+VOID CIocpServer::RemoveContextObject(PCONTEXT_OBJECT contextObject)
 {
 	return;
+}
+
+BOOL CIocpServer::HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject, DWORD NumberOfBytesTransferred)
+{
+	BOOL v1 = FALSE;
+
+	if (IO_INITIALIZE == PacketType)
+	{
+		MessageBox(NULL, _T("IO_INITIALIZE"), _T("IO_INITIALIZE"), 0);
+	}
+
+	if (IO_RECEIVE == PacketType)
+	{
+
+	}
+
+	if (IO_SEND == PacketType)
+	{
+
+	}
+	return v1;
 }
 
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 {
 	CIocpServer* v1 = (CIocpServer*)ParameterData;
+	HANDLE   CompletionPortHandle = v1->m_CompletionPortHandle;
+	DWORD    NumberOfBytesTransferred = 0;
+	LPOVERLAPPED     Overlapped = NULL;
+	PCONTEXT_OBJECT  ContextObject = NULL;  //指针
+	COVERLAPPEDEX* OverlappedEx = NULL;     //指针
+
+		//原子锁
+	InterlockedIncrement(&v1->m_CurrentThreadsCount);  //1  2
+	InterlockedIncrement(&v1->m_BusyThreadsCount);     //1  2
+
+
+	ULONG            v3 = 0;
+	BOOL             IsOk1 = FALSE;
 
 	while (v1->m_Working == TRUE)
 	{
+		BOOL IsOk2 = GetQueuedCompletionStatus(
+			CompletionPortHandle,
+			&NumberOfBytesTransferred,                    //完成多少数据
+			(PULONG_PTR)&ContextObject,       //完成Key   获得的完成Key就是咱们投递过去的
+			&Overlapped, 60000);
+
+		DWORD LastError = GetLastError();
+		OverlappedEx = CONTAINING_RECORD(Overlapped, COVERLAPPEDEX, m_Overlapped);  //数据强制转换
+
+
+		v3 = InterlockedIncrement(&v1->m_BusyThreadsCount);
+		//完成端口异常(强制退出)
+		if (!IsOk2 && LastError != WAIT_TIMEOUT)
+		{
+			//关闭线程
+			if (ContextObject && v1->m_Working == FALSE && NumberOfBytesTransferred == 0)
+			{
+				//当对方的套机制发生了关闭	
+				v1->RemoveContextObject(ContextObject);
+			}
+			continue;
+		}
+
+		//线程池调度
+		if (!IsOk1)
+		{
+
+			//如果你在干活就判断一下是否可以再调度一个线程
+
+			//分配一个新的线程到线程到线程池
+			if (v3 == v1->m_CurrentThreadsCount)
+			{
+
+				if (v3 < v1->m_ThreadsPoolMax)//
+				{
+
+
+					if (ContextObject != NULL)   //你是否在干活
+					{
+
+						HANDLE ThreadHandle = (HANDLE)CreateThread(NULL,
+							0,
+							(LPTHREAD_START_ROUTINE)WorkThreadProcedure,
+							(void*)v1,
+							0,
+							NULL);
+						InterlockedIncrement(&v1->m_WorkThreadsCount);
+
+						CloseHandle(ThreadHandle);
+					}
+
+
+				}
+			}
+			//销毁一个线程从线程池
+			if (!IsOk2 && LastError == WAIT_TIMEOUT)
+			{
+				if (ContextObject == NULL)
+				{
+					{
+						if (v1->m_CurrentThreadsCount > v1->m_ThreadsPoolMin)
+						{
+							break;   //销毁一个线程
+						}
+					}
+					IsOk2 = TRUE;
+				}
+			}
+		}
+
+
+		//处理完成的请求
+		if (!IsOk1)
+		{
+			//当前线程要对完成请求进行处理
+			//请求得到完成(两种请求 IO_INITIALIZE IO_RECEIVE )
+			if (IsOk2 && OverlappedEx != NULL && ContextObject != NULL)
+			{
+				try
+				{
+
+					//请求得到完成的处理函数
+					v1->HandleIo(OverlappedEx->m_PackType, ContextObject, NumberOfBytesTransferred);
+
+					//没有释放内存
+					ContextObject = NULL;
+
+				}
+				catch (...) {}
+			}
+		}
+
+		if (OverlappedEx)
+		{
+			delete OverlappedEx;
+			OverlappedEx = NULL;
+		}
 
 	}
+
+	InterlockedDecrement(&v1->m_WorkThreadsCount);
+	InterlockedDecrement(&v1->m_CurrentThreadsCount);
+	InterlockedDecrement(&v1->m_BusyThreadsCount);
 
 	TCHAR testWorkThreadsExit[0x1000] = { 0 };
 	_stprintf_s(testWorkThreadsExit, _T("ThreadIdentity:%d"), GetCurrentThreadId());
