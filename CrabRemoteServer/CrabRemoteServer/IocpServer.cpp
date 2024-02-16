@@ -465,6 +465,11 @@ void CIocpServer::OnAccept()
 		RemoveContextObject(ContextObject);
 		return;
 	}
+
+	//该上线用户已完成了上线的请求
+	//服务器向该用户投递PostRecv请求
+
+
 	PostReceive(ContextObject);
 }
 
@@ -499,7 +504,28 @@ PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
 
 PCONTEXT_OBJECT CIocpServer::RemoveContextObject(PCONTEXT_OBJECT contextObject)
 {
-	return PCONTEXT_OBJECT();
+	//向我们的刚上线的用户的投递一个接受数据的请求
+	//如果该请求得到完成(用户发送数据)
+	//工作线程(守候在完成端口)会响应并调用HandleIO函数
+	COVERLAPPEDEX* OverlappedEx = new COVERLAPPEDEX(IO_RECEIVE);
+
+	DWORD			ReturnLength;
+	ULONG			Flags = MSG_PARTIAL;   //没有意义
+
+	//函数返回但是请求没有得到完成
+	int IsOk = WSARecv(contextObject->clientSocket,
+		&contextObject->bufferReceive,   //接受数据的内存
+		1,
+		&ReturnLength,                      //TransferBufferLength
+		&Flags,
+		&OverlappedEx->m_Overlapped,   //事件
+		NULL);
+	//返回值是错误 && 但是是错误中的未完成 == 成功
+	if (IsOk == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+	{
+		//请求发送错误
+		RemoveContextObject(contextObject);   //完犊子  
+	}
 }
 
 VOID CIocpServer::PostReceive(PCONTEXT_OBJECT)
@@ -526,6 +552,25 @@ BOOL CIocpServer::HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject
 
 	}
 	return v1;
+}
+
+VOID CIocpServer::MoveContextObjectToFreePool(CONTEXT_OBJECT* ContextObject)
+{
+	_CCriticalSection CriticalSection(&m_CriticalSection);
+
+	POSITION Position = m_ConnectContextList.Find(ContextObject);
+	if (Position)
+	{
+
+		ContextObject->m_ReceivedBufferDataCompressed.ClearArray();
+		ContextObject->m_ReceivedBufferDataDecompressed.ClearArray();
+		ContextObject->m_SendBufferDataCompressed.ClearArray();
+
+		memset(ContextObject->bufferData, 0, PACKET_LENGTH);
+		m_FreeContextList.AddTail(ContextObject);                         //回收至内存池
+		m_ConnectContextList.RemoveAt(Position);                          //从内存结构中移除
+
+	}
 }
 
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
@@ -567,7 +612,7 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 			//关闭线程
 			if (ContextObject &&   v1->m_Working == FALSE  &&   NumberOfBytesTransferred == 0)
 			{
-				//当对方的套机制发生了关闭	
+				//当对方的套接字发生了关闭	
 				v1->RemoveContextObject(ContextObject);
 			}
 			continue;
@@ -603,9 +648,10 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 
 
 				}
-			}
+			}	
+
 			//销毁一个线程从线程池
-			if (!IsOk2 && LastError == WAIT_TIMEOUT)
+			if (!IsOk2  &&  LastError == WAIT_TIMEOUT)
 			{
 				if (ContextObject == NULL)
 				{

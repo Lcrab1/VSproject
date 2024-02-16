@@ -86,6 +86,8 @@ public:
 	VOID PostReceive(PCONTEXT_OBJECT);
 	BOOL HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject,
 		DWORD NumberOfBytesTransferred);
+	VOID MoveContextObjectToFreePool(CONTEXT_OBJECT* ContextObject);
+
 public:
 	//监听套接字
 	SOCKET m_listenSocket;
