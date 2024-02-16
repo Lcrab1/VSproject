@@ -504,6 +504,27 @@ PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
 
 PCONTEXT_OBJECT CIocpServer::RemoveContextObject(PCONTEXT_OBJECT contextObject)
 {
+	_CCriticalSection CriticalSection(&m_CriticalSection);
+	//在内存中查找该用户的上下背景文数据结构
+	if (m_ConnectContextList.Find(contextObject))
+	{
+		//取消在当前套接字的异步IO以前的未完成的异步请求全部立即取消   
+		CancelIo((HANDLE)contextObject->clientSocket);    //会将该对象上没有得到完成的异步Io立即完成
+		//关闭套接字
+		closesocket(contextObject->clientSocket);
+		contextObject->clientSocket = INVALID_SOCKET;
+		//判断还有没有异步IO请求在当前套接字上
+		while (!HasOverlappedIoCompleted((LPOVERLAPPED)contextObject))   //查看一下完成端口还有没有王浩的箱子
+		{
+			Sleep(1);
+		}
+		//将该内存结构回收至内存池
+		MoveContextObjectToFreePool(contextObject);   //回收对象内存到内存池
+	}
+}
+
+VOID CIocpServer::PostReceive(PCONTEXT_OBJECT contextObject)
+{
 	//向我们的刚上线的用户的投递一个接受数据的请求
 	//如果该请求得到完成(用户发送数据)
 	//工作线程(守候在完成端口)会响应并调用HandleIO函数
@@ -526,11 +547,6 @@ PCONTEXT_OBJECT CIocpServer::RemoveContextObject(PCONTEXT_OBJECT contextObject)
 		//请求发送错误
 		RemoveContextObject(contextObject);   //完犊子  
 	}
-}
-
-VOID CIocpServer::PostReceive(PCONTEXT_OBJECT)
-{
-	return VOID();
 }
 
 BOOL CIocpServer::HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject, DWORD NumberOfBytesTransferred)
