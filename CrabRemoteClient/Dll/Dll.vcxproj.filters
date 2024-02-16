@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="用户上线">
+      <UniqueIdentifier>{975459b1-ca9e-41f4-ab03-c57737886cf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="数据结构">
+      <UniqueIdentifier>{fa9fde6c-f8b7-408d-8c83-14922a46c70a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="压缩库">
+      <UniqueIdentifier>{410a6854-afe3-4b1d-b011-72db4533ea46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -24,6 +33,18 @@
     <ClInclude Include="IocpClient.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Login.h">
+      <Filter>用户上线</Filter>
+    </ClInclude>
+    <ClInclude Include="CArray.h">
+      <Filter>数据结构</Filter>
+    </ClInclude>
+    <ClInclude Include="zconf.h">
+      <Filter>压缩库</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib.h">
+      <Filter>压缩库</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -34,6 +55,15 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Login.cpp">
+      <Filter>用户上线</Filter>
+    </ClCompile>
+    <ClCompile Include="Common.h">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CArray.cpp">
+      <Filter>数据结构</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

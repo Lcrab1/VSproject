@@ -61,13 +61,16 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
         if (ok == TRUE) {
             break;
         }
-
+        DWORD TickCount = GetTickCount64();
         if (!IocpClient.ConnectServer(__ServerAddress, __ConnectPort)) {
             continue;
         }
 
-        Sleep(INFINITE);
 
+        //SendLoginInformation(&IocpClient, GetTickCount() - TickCount);
+
+
+        Sleep(INFINITE); 
     }
 
 

@@ -508,11 +508,12 @@ PCONTEXT_OBJECT CIocpServer::RemoveContextObject(PCONTEXT_OBJECT contextObject)
 	//在内存中查找该用户的上下背景文数据结构
 	if (m_ConnectContextList.Find(contextObject))
 	{
-		//取消在当前套接字的异步IO以前的未完成的异步请求全部立即取消   
+		//取消在当前套接字的异步IO 以前的未完成的异步请求全部立即取消   
 		CancelIo((HANDLE)contextObject->clientSocket);    //会将该对象上没有得到完成的异步Io立即完成
 		//关闭套接字
 		closesocket(contextObject->clientSocket);
 		contextObject->clientSocket = INVALID_SOCKET;
+
 		//判断还有没有异步IO请求在当前套接字上
 		while (!HasOverlappedIoCompleted((LPOVERLAPPED)contextObject))   //查看一下完成端口还有没有王浩的箱子
 		{
@@ -537,16 +538,19 @@ VOID CIocpServer::PostReceive(PCONTEXT_OBJECT contextObject)
 	int IsOk = WSARecv(contextObject->clientSocket,
 		&contextObject->bufferReceive,   //接受数据的内存
 		1,
-		&ReturnLength,                      //TransferBufferLength
+		&ReturnLength,                      //Transfe	rBufferLength
 		&Flags,
 		&OverlappedEx->m_Overlapped,   //事件
 		NULL);
-	//返回值是错误 && 但是是错误中的未完成 == 成功
+
+	//返回值是错误 && 不是错误中的未完成
+	//WSA_IO_PENDING表示操作将在未来完成
 	if (IsOk == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 	{
 		//请求发送错误
 		RemoveContextObject(contextObject);   //完犊子  
 	}
+
 }
 
 BOOL CIocpServer::HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject, DWORD NumberOfBytesTransferred)
