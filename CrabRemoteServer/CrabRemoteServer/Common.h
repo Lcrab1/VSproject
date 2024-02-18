@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include"pch.h"
 #include <Windows.h>
 #include <iostream>
 #include <tchar.h>
@@ -54,3 +55,5 @@ enum
 	CLIENT_REGISTER_MANAGER_KEY_DATA_REPLY,
 	CLIENT_GO_ON,
 };
+
+#define UM_CLIENT_LOGIN                  WM_USER+1000

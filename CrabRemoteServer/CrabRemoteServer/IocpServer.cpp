@@ -38,7 +38,7 @@ CIocpServer::CIocpServer()
 
 	m_CurrentThreadsCount = 0;
 	m_BusyThreadsCount = 0;
-
+	memcpy(m_PacketHeaderFlag, "Shine", PACKET_FLAG_LENGTH);
 }
 CIocpServer::~CIocpServer()
 {
@@ -102,11 +102,14 @@ CIocpServer::~CIocpServer()
 	//资源回收
 }
 
-BOOL CIocpServer::ServerRun(USHORT ListenPort)
+BOOL CIocpServer::ServerRun(USHORT ListenPort, LPFN_WNDCALLBACK WndCallback)
 {
 
 	BOOL IsOk = TRUE;//绑定套接
 	SOCKADDR_IN	ServerAddress;   //结构体
+
+
+	m_WndCallback = WndCallback;
 
 	//创建事件对象 最后一个参数表示事件的名称,传入NULL代表传入的是一个匿名对象
 	//Kernel32.dll
@@ -462,7 +465,7 @@ void CIocpServer::OnAccept()
 	if ((!Ok && GetLastError() != ERROR_IO_PENDING))
 	{
 		//如果投递失败
-		RemoveContextObject(ContextObject);
+		RemoveContextObject(ContextObject, &OverlappedEx->m_Overlapped);
 		return;
 	}
 
@@ -502,7 +505,9 @@ PCONTEXT_OBJECT CIocpServer::AllocateContextObject()
 	return ContextObject;
 }
 
-PCONTEXT_OBJECT CIocpServer::RemoveContextObject(PCONTEXT_OBJECT contextObject)
+
+/*******bug待修*******/
+PCONTEXT_OBJECT CIocpServer::RemoveContextObject(PCONTEXT_OBJECT contextObject, LPOVERLAPPED Overlapped)
 {
 	_CCriticalSection CriticalSection(&m_CriticalSection);
 	//在内存中查找该用户的上下背景文数据结构
@@ -515,13 +520,15 @@ PCONTEXT_OBJECT CIocpServer::RemoveContextObject(PCONTEXT_OBJECT contextObject)
 		contextObject->clientSocket = INVALID_SOCKET;
 
 		//判断还有没有异步IO请求在当前套接字上
-		while (!HasOverlappedIoCompleted((LPOVERLAPPED)contextObject))   //查看一下完成端口还有没有王浩的箱子
+		while (!HasOverlappedIoCompleted((LPOVERLAPPED)Overlapped))   //查看一下完成端口还有没有王浩的箱子
 		{
 			Sleep(1);
 		}
+
 		//将该内存结构回收至内存池
 		MoveContextObjectToFreePool(contextObject);   //回收对象内存到内存池
 	}
+	return NULL;
 }
 
 VOID CIocpServer::PostReceive(PCONTEXT_OBJECT contextObject)
@@ -548,23 +555,24 @@ VOID CIocpServer::PostReceive(PCONTEXT_OBJECT contextObject)
 	if (IsOk == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 	{
 		//请求发送错误
-		RemoveContextObject(contextObject);   //完犊子  
+		RemoveContextObject(contextObject, &OverlappedEx->m_Overlapped);   //完犊子  
 	}
 
 }
 
-BOOL CIocpServer::HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject, DWORD NumberOfBytesTransferred)
+BOOL CIocpServer::HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject, DWORD NumberOfBytesTransferred, LPOVERLAPPED Overlapped)
 {
 	BOOL v1 = FALSE;
 
 	if (IO_INITIALIZE == PacketType)
 	{
-		MessageBox(NULL, _T("IO_INITIALIZE"), _T("IO_INITIALIZE"), 0);
+		//MessageBox(NULL, _T("IO_INITIALIZE"), _T("IO_INITIALIZE"), 0);
 	}
 
 	if (IO_RECEIVE == PacketType)
 	{
-
+		//完成SendLonginInfo数据分析
+		v1 = OnReceiving(ContextObject, NumberOfBytesTransferred, Overlapped);
 	}
 
 	if (IO_SEND == PacketType)
@@ -581,17 +589,148 @@ VOID CIocpServer::MoveContextObjectToFreePool(CONTEXT_OBJECT* ContextObject)
 	POSITION Position = m_ConnectContextList.Find(ContextObject);
 	if (Position)
 	{
-
 		ContextObject->m_ReceivedBufferDataCompressed.ClearArray();
 		ContextObject->m_ReceivedBufferDataDecompressed.ClearArray();
 		ContextObject->m_SendBufferDataCompressed.ClearArray();
-
 		memset(ContextObject->bufferData, 0, PACKET_LENGTH);
+
 		m_FreeContextList.AddTail(ContextObject);                         //回收至内存池
 		m_ConnectContextList.RemoveAt(Position);                          //从内存结构中移除
 
 	}
 }
+
+BOOL CIocpServer::OnReceiving(PCONTEXT_OBJECT  ContextObject, DWORD BufferLength, LPOVERLAPPED Overlapped)
+{
+	_CCriticalSection CriticalSection(&m_CriticalSection);
+	try
+	{
+
+		if (BufferLength == 0)
+		{
+			//对方关闭了套接字
+			MessageBox(NULL, _T("关闭套接字"), _T("关闭套接字"), 0);
+			RemoveContextObject(ContextObject, Overlapped);
+			return FALSE;
+		}
+
+
+		//将接到的数据拷贝到m_ReceivedCompressedBufferData
+		ContextObject->m_ReceivedBufferDataCompressed.WriteArray(
+			(PBYTE)ContextObject->bufferData, BufferLength);
+		//将接收到的数据拷贝到我们自己的内存中wsabuff    8192
+
+//读取数据包的头部(数据包的头部是不参与压缩的)
+		while (ContextObject->m_ReceivedBufferDataCompressed.GetArrayLength() > PACKET_HEADER_LENGTH)
+		{
+			//存储数据包头部标志
+			char v1[PACKET_FLAG_LENGTH] = { 0 };//Shine[][][]
+
+
+			//拷贝数据包头部标志
+			CopyMemory(v1, ContextObject->m_ReceivedBufferDataCompressed.GetArray(), PACKET_FLAG_LENGTH);
+
+
+			//校验数据包头部标志
+			if (memcmp(m_PacketHeaderFlag, v1, PACKET_FLAG_LENGTH) != 0)
+			{
+				throw "Bad Buffer";
+			}
+
+			//获取数据包总大小
+			ULONG PackTotalLength = 0;
+			CopyMemory(&PackTotalLength,
+				ContextObject->m_ReceivedBufferDataCompressed.GetArray(PACKET_FLAG_LENGTH),
+				sizeof(ULONG));
+
+
+			if (PackTotalLength &&
+				(ContextObject->m_ReceivedBufferDataCompressed.GetArrayLength()) >= PackTotalLength)
+			{
+				//[Shine][压缩的长度+13][没有压缩的长度][HelloWorld.......]
+				ULONG DecompressedLength = 0;
+
+				ContextObject->m_ReceivedBufferDataCompressed.ReadArray((PBYTE)v1, PACKET_FLAG_LENGTH);
+
+				//[压缩的长度+13][没有压缩的长度][HelloWorld.......]
+				ContextObject->m_ReceivedBufferDataCompressed.ReadArray((PBYTE)&PackTotalLength,
+					sizeof(ULONG));
+
+				//[没有压缩的长度][HelloWorld.......]
+				ContextObject->m_ReceivedBufferDataCompressed.ReadArray((PBYTE)&DecompressedLength,
+					sizeof(ULONG));
+
+				//[HelloWorld.......]
+				ULONG CompressedLength = PackTotalLength - PACKET_HEADER_LENGTH;   //背压缩后的真实数据的长度
+
+				//压缩数据
+				PBYTE CompressedData = new BYTE[CompressedLength];
+
+				//解压缩数据
+				PBYTE DecompressedData = new BYTE[DecompressedLength];  //解压过的数据长度 
+
+				if (CompressedData == NULL || DecompressedData == NULL)
+				{
+					throw "Bad Allocate";
+
+				}
+
+				//从数据包中获取压缩后的数据
+				ContextObject->m_ReceivedBufferDataCompressed.ReadArray(CompressedData, CompressedLength);
+
+
+				//解压缩
+				int	IsOk = uncompress(DecompressedData,
+					&DecompressedLength, CompressedData, CompressedLength);
+
+				if (IsOk == Z_OK)
+				{
+					ContextObject->m_ReceivedBufferDataDecompressed.ClearArray();
+					ContextObject->m_ReceivedBufferDataCompressed.ClearArray();
+
+					//拷贝真实数据
+					ContextObject->m_ReceivedBufferDataDecompressed.WriteArray(DecompressedData,
+						DecompressedLength);
+
+
+					delete[] CompressedData;
+					delete[] DecompressedData;
+
+					//窗口回调函数(函数指针)
+					m_WndCallback(ContextObject);  //通知窗口  接受到的被解压的数据 
+				}
+				else
+				{
+					delete[] CompressedData;
+					delete[] DecompressedData;
+					throw "Bad Buffer";
+				}
+
+
+
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		//上一次的异步请求已经得到完成重新投递新的异步请求
+		PostReceive(ContextObject);
+	}
+	catch (...)
+	{
+		ContextObject->m_ReceivedBufferDataDecompressed.ClearArray();
+		ContextObject->m_ReceivedBufferDataCompressed.ClearArray();
+
+		PostReceive(ContextObject);
+	}
+
+	return TRUE;
+
+}
+
+
 
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 {
@@ -633,7 +772,7 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 			if (ContextObject &&   v1->m_Working == FALSE  &&   NumberOfBytesTransferred == 0)
 			{
 				//当对方的套接字发生了关闭	
-				v1->RemoveContextObject(ContextObject);
+				v1->RemoveContextObject(ContextObject, &OverlappedEx->m_Overlapped);
 			}
 			continue;
 		}
@@ -696,7 +835,7 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 				{
 
 					//请求得到完成的处理函数
-					v1->HandleIo(OverlappedEx->m_PackType, ContextObject, NumberOfBytesTransferred);
+					v1->HandleIo(OverlappedEx->m_PackType, ContextObject, NumberOfBytesTransferred, Overlapped);
 
 					//没有释放内存
 					ContextObject = NULL;

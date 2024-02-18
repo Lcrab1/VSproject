@@ -13,7 +13,7 @@ public:
 	ULONG_PTR ReallocateArray(ULONG_PTR BufferLength);
 	ULONG_PTR GetArrayMaximumLength();
 	ULONG_PTR GetArrayLength();
-	PUINT8 GetArray(ULONG_PTR Position);
+	PUINT8 GetArray(ULONG_PTR Position=0);
 	VOID ClearArray();
 	ULONG_PTR DeallocateArray(ULONG_PTR BufferLength);
 	ULONG_PTR ReadArray(PUINT8 BufferData, ULONG_PTR BufferLength);

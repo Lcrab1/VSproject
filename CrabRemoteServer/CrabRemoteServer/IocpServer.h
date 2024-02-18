@@ -5,8 +5,11 @@
 #include"CArray.h"
 #include"CriticalSection.h"
 #include <mstcpip.h>
+#include "zconf.h"
+#include "zlib.h"
 using namespace std;
 #pragma comment(lib,"Ws2_32.lib")   //kernel32.dll User32.dll  Ws2_32.dll 加载这个库为使用通信接口
+#pragma comment(lib,"zlib.lib") 
 #define WORK_THREAD_MAX 2
 #define PACKET_LENGTH 0x2000
 
@@ -33,6 +36,10 @@ public:
 	}
 };
 
+
+#define PACKET_LENGTH 0x2000
+#define PACKET_FLAG_LENGTH     5       //Shine
+#define PACKET_HEADER_LENGTH   13      //Shine[数据包总长(4)][原始数据总长(4)]
 
 typedef struct _CONTEXT_OBJECT_
 {
@@ -67,6 +74,8 @@ typedef struct _CONTEXT_OBJECT_
 
 typedef CList<PCONTEXT_OBJECT> 	CONTEXT_LIST;      //MFC的官方的类模板
 
+typedef void (CALLBACK* LPFN_WNDCALLBACK)(PCONTEXT_OBJECT ContextObject);  //函数指针定义 
+
 //线程回调函数的创建法1
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData);
 class CIocpServer   //IoCompletePort
@@ -74,19 +83,20 @@ class CIocpServer   //IoCompletePort
 public:
 	CIocpServer();
 	~CIocpServer();
-	BOOL ServerRun(USHORT ListenPort);
+	BOOL ServerRun(USHORT ListenPort, LPFN_WNDCALLBACK WndCallback);
 	BOOL IocpInit();
 	//线程回调函数的创建法2
 	static DWORD WINAPI ListenThreadProcedure(LPVOID ParameterData);
 	void OnAccept();
 
 	PCONTEXT_OBJECT AllocateContextObject();
-	PCONTEXT_OBJECT RemoveContextObject(PCONTEXT_OBJECT contextObject);
+	PCONTEXT_OBJECT RemoveContextObject(PCONTEXT_OBJECT contextObject, LPOVERLAPPED Overlapped);
 
 	VOID PostReceive(PCONTEXT_OBJECT);
 	BOOL HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject,
-		DWORD NumberOfBytesTransferred);
+		DWORD NumberOfBytesTransferred, LPOVERLAPPED Overlapped);
 	VOID MoveContextObjectToFreePool(CONTEXT_OBJECT* ContextObject);
+	BOOL OnReceiving(PCONTEXT_OBJECT  ContextObject, DWORD BufferLength, LPOVERLAPPED Overlapped);
 
 public:
 	//监听套接字
@@ -119,4 +129,7 @@ public:
 
 	volatile long m_CurrentThreadsCount;
 	volatile long m_BusyThreadsCount;
+
+	char   m_PacketHeaderFlag[PACKET_FLAG_LENGTH];
+	LPFN_WNDCALLBACK m_WndCallback;
 };

@@ -31,6 +31,12 @@
     <Filter Include="数据结构">
       <UniqueIdentifier>{c0b7d427-d171-44df-a6d9-41b4f000be9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Login">
+      <UniqueIdentifier>{860f48ce-a190-4384-bdaf-acfaea18680f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="压缩库">
+      <UniqueIdentifier>{09e46673-5cd4-49f0-844d-99f56e14b343}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -69,6 +75,15 @@
     <ClInclude Include="CriticalSection.h">
       <Filter>数据结构</Filter>
     </ClInclude>
+    <ClInclude Include="Login.h">
+      <Filter>Login</Filter>
+    </ClInclude>
+    <ClInclude Include="zconf.h">
+      <Filter>压缩库</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib.h">
+      <Filter>压缩库</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -97,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="CriticalSection.cpp">
       <Filter>数据结构</Filter>
+    </ClCompile>
+    <ClCompile Include="Common.h">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

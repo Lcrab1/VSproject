@@ -95,14 +95,16 @@ DWORD WINAPI CIocpClient::WorkThreadProcedure(LPVOID ParameterData)
 	{
 		NewSocketSet = OldSocketSet;
 		//服务器如果没有数据发送，客户端将阻塞在select中
-
+		//通过select的返回值来阻塞  select正常会返回准备好的文件描述符数量
+		//select超时则返回0   出错则返回-1
 		int IsOk = select(NULL, &NewSocketSet, NULL, NULL, NULL);	//阻塞函数
 		if (IsOk == SOCKET_ERROR)
-		{
+		{	
 			v1->Disconnect();
 			printf("IsReceiving关闭\r\n");
 			break;
 		}
+
 		if (IsOk > 0)
 		{
 			memset(bufferData, 0, sizeof(bufferData));
@@ -113,6 +115,7 @@ DWORD WINAPI CIocpClient::WorkThreadProcedure(LPVOID ParameterData)
 				v1->Disconnect();
 				break;
 			}
+
 			if (bufferLength > 0)
 			{
 				v1->OnReceiving((char*)bufferData, bufferLength);
@@ -208,6 +211,7 @@ BOOL CIocpClient::SendWithSplit(char* BufferData, ULONG BufferLength, ULONG Spli
 				break;//发送成功退出 该段数据发送
 			}
 		}
+
 		if (j == SendRetry)
 		{
 			return FALSE;   //完犊子
