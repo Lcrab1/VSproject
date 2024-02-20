@@ -577,7 +577,7 @@ BOOL CIocpServer::HandleIo(PACKET_TYPE PacketType, PCONTEXT_OBJECT ContextObject
 
 	if (IO_SEND == PacketType)
 	{
-
+		v1 = OnSending(ContextObject, NumberOfBytesTransferred, Overlapped);
 	}
 	return v1;
 }
@@ -731,7 +731,48 @@ BOOL CIocpServer::OnReceiving(PCONTEXT_OBJECT  ContextObject, DWORD BufferLength
 
 }
 
+BOOL CIocpServer::OnSending(CONTEXT_OBJECT* ContextObject, ULONG BufferLength, LPOVERLAPPED Overlapped)
+{
+	try
+	{
+		DWORD Flags = MSG_PARTIAL;   //没有意义
+		//将完成的数据从数据结构中去除
+		ContextObject->m_SendBufferDataCompressed.RemoveArray(BufferLength);
+		//判断还有多少数据需要发送
+		if (ContextObject->m_SendBufferDataCompressed.GetArrayLength() == 0)
+		{
+			//数据已经发送完毕
+			ContextObject->m_SendBufferDataCompressed.ClearArray();
+			return true;
+		}
+		else
+		{
+			//真正发送数据
+			COVERLAPPEDEX* OverlappedEx = new COVERLAPPEDEX(IO_SEND);
 
+			//将压缩后的数据关联至标准的数据类型中
+			ContextObject->bufferSend.buf = (char*)ContextObject->m_SendBufferDataCompressed.GetArray();
+			ContextObject->bufferSend.len = ContextObject->m_SendBufferDataCompressed.GetArrayLength();
+
+
+			//如果该wsa函数真正完成
+			int IsOk = WSASend(ContextObject->clientSocket,
+				&ContextObject->bufferSend,
+				1,
+				&ContextObject->bufferSend.len,
+				Flags,
+				&OverlappedEx->m_Overlapped,    //构建新的异步请求
+				NULL);
+			if (IsOk == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+			{
+				//构建失败了
+				RemoveContextObject(ContextObject, Overlapped);   //检查曾经的异步回收
+			}
+		}
+	}
+	catch (...) {}
+	return FALSE;
+}
 
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 {
@@ -864,4 +905,46 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 
 
 	return 0;
+}
+
+
+VOID CIocpServer::OnPrepareSending(CONTEXT_OBJECT* ContextObject, PBYTE BufferData, ULONG BufferLength)
+{
+	if (ContextObject == NULL)
+	{
+		return;   //没有目标
+	}
+
+	try
+	{
+		if (BufferLength > 0)
+		{
+			unsigned long	CompressedLength = (double)BufferLength * 1.001 + 12;
+			LPBYTE			CompressedData = new BYTE[CompressedLength];
+			int	IsOk = compress(CompressedData, &CompressedLength, (LPBYTE)BufferData, BufferLength);
+
+			if (IsOk != Z_OK)
+			{
+				delete[] CompressedData;
+				return;
+			}
+			ULONG PackTotalLength = CompressedLength + PACKET_HEADER_LENGTH;
+			//构建数据包头部
+			ContextObject->m_SendBufferDataCompressed.WriteArray((LPBYTE)m_PacketHeaderFlag, PACKET_FLAG_LENGTH);
+			//[Shine]
+			ContextObject->m_SendBufferDataCompressed.WriteArray((PBYTE)&PackTotalLength, sizeof(ULONG));
+			//[Shine][PackTotalLength]
+			ContextObject->m_SendBufferDataCompressed.WriteArray((PBYTE)&BufferLength, sizeof(ULONG));
+			//[Shine][PackTotalLength][BufferLength]
+			ContextObject->m_SendBufferDataCompressed.WriteArray(CompressedData, CompressedLength);
+			//[Shine][PackTotalLength][BufferLength][.....(真实数据)]
+			delete[] CompressedData;
+		}
+		COVERLAPPEDEX* OverlappedEx = new COVERLAPPEDEX(IO_SEND);
+
+		//将该请求投递到完成端口
+		PostQueuedCompletionStatus(m_CompletionPortHandle, 0, (ULONG_PTR)ContextObject,
+			&OverlappedEx->m_Overlapped);
+	}
+	catch (...) {}
 }

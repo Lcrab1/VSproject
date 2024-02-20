@@ -7,6 +7,7 @@
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
 #define IDD_CRABREMOTESERVER_DIALOG     102
+#define IDR_STATUSBAR_SERVER_STRING     102
 #define IDR_MAINFRAME                   128
 #define CRAB_DIALOG_MAIN_MENU           130
 #define IDR_TOOLBAR1                    131
@@ -14,8 +15,9 @@
 #define IDB_SERVER_DIALOG_MAIN_BITMAP   137
 #define IDD_SERVER_MANAGER_DIALOG       139
 #define IDB_PNG_SERVER_MANAGER          144
-
 #define IDI_ICO_SEVER_MANAGER           145
+#define IDR_MENU1                       146
+#define IDR_CLIENT_INFO_LIST_MENU       146
 #define CRAB_SERVER_INFORMATION_LIST    1000
 #define CRAB_CLIENT_INFORMATION_LIST    1001
 #define IDC_SET_LISTEN_PORT             1003
@@ -40,13 +42,16 @@
 #define ID_SHOW_MAIN_DIALOG             32796
 #define ID_                             32797
 #define ID_HIDE_MAIN_DIALOG             32798
+#define ID_DELETE_CONNECTION            32803
+#define ID_INSTANT_MESSAGE              32804
+#define ID_REMOTE_SHUTDOWN              32805
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        146
-#define _APS_NEXT_COMMAND_VALUE         32800
+#define _APS_NEXT_RESOURCE_VALUE        147
+#define _APS_NEXT_COMMAND_VALUE         32806
 #define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

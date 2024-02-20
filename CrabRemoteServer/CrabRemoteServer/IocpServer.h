@@ -97,7 +97,8 @@ public:
 		DWORD NumberOfBytesTransferred, LPOVERLAPPED Overlapped);
 	VOID MoveContextObjectToFreePool(CONTEXT_OBJECT* ContextObject);
 	BOOL OnReceiving(PCONTEXT_OBJECT  ContextObject, DWORD BufferLength, LPOVERLAPPED Overlapped);
-
+	VOID OnPrepareSending(CONTEXT_OBJECT* ContextObject, PBYTE BufferData, ULONG BufferLength);
+	BOOL OnSending(CONTEXT_OBJECT* ContextObject, ULONG BufferLength, LPOVERLAPPED Overlapped);
 public:
 	//监听套接字
 	SOCKET m_listenSocket;

@@ -45,7 +45,11 @@ COLUMN_DATA __ServerInfoList[] =
 
 CCrabRemoteServerDlg* __ServerProjectDlg = NULL;
 
-
+//静态全局变量  不能让当前的全局变量在其他的cpp文件中被使用
+static UINT __Indicators[] =
+{
+	IDR_STATUSBAR_SERVER_STRING
+};
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -128,6 +132,11 @@ BEGIN_MESSAGE_MAP(CCrabRemoteServerDlg, CDialogEx)
 	ON_COMMAND(ID_SHOW_MAIN_DIALOG, &CCrabRemoteServerDlg::OnShowMainDialog)
 	ON_COMMAND(ID_HIDE_MAIN_DIALOG, &CCrabRemoteServerDlg::OnHideMainDialog)
 	ON_MESSAGE(UM_CLIENT_LOGIN, OnClientLogin)
+	ON_WM_SIZE()
+	ON_NOTIFY(NM_RCLICK, CRAB_CLIENT_INFORMATION_LIST, &CCrabRemoteServerDlg::OnNMRClickClientInformationList)
+	ON_COMMAND(ID_DELETE_CONNECTION, &CCrabRemoteServerDlg::OnDeleteConnection)
+	ON_COMMAND(ID_INSTANT_MESSAGE, &CCrabRemoteServerDlg::OnInstantMessage)
+	ON_COMMAND(ID_REMOTE_SHUTDOWN, &CCrabRemoteServerDlg::OnRemoteShutdown)
 END_MESSAGE_MAP()
 
 
@@ -188,6 +197,8 @@ BOOL CCrabRemoteServerDlg::OnInitDialog()
 	m_configFile.GetCongfigFileData(_T("Settings"), _T("ListenPort"), m_listenPort);
 	m_configFile.GetCongfigFileData(_T("Settings"), _T("MaxConnections"), m_maxConnections);
 
+	/*****初始化状态栏*****/
+	StatusBarInit();
 	ServerStart();
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -381,6 +392,25 @@ void CCrabRemoteServerDlg::TrueColorToolBarInit()
 
 }
 
+VOID CCrabRemoteServerDlg::StatusBarInit()
+{
+	//成员函数  
+	//消息函数(声明  Mapping  实现)  Static函数(声明 实现)  普通函数(声明 实现 自定义消息函数)
+	//MFC 成员变量  
+	//
+
+	if (!m_StatusBar.Create(this) ||
+		!m_StatusBar.SetIndicators(__Indicators,
+			sizeof(__Indicators) / sizeof(UINT)))                    //创建状态条并设置字符资源的ID
+	{
+		return;
+	}
+	CRect v1;    //矩形类
+	GetWindowRect(&v1); //Top Left Bottom Rigth   
+	v1.bottom += 1;     //没有任何意义  触发OnSize立即执行
+	MoveWindow(v1);
+}
+
 VOID CCrabRemoteServerDlg::OnButtonCmdManager()
 {
 	MessageBox("OnButtonCmdManager");
@@ -550,6 +580,24 @@ void CCrabRemoteServerDlg::ShowMainDlgInfo(BOOL ok,CString& message)
 	m_ServerInfoList.SetItemText(0, 1, v2);
 	m_ServerInfoList.SetItemText(0, 2, message);	///v2需要修改
 	UpdateData(FALSE);
+
+	if (message.Find("上线") > 0)         //处理上线还是下线消息
+	{
+		m_ConnectionCount++;
+	}
+	else if (message.Find("下线") > 0)
+	{
+		m_ConnectionCount--;
+	}
+	else if (message.Find("断开") > 0)
+	{
+		m_ConnectionCount--;
+	}
+
+	CString v3;
+	m_ConnectionCount = (m_ConnectionCount <= 0 ? 0 : m_ConnectionCount);         //防止iCount 有-1的情况
+	v3.Format("有%d台主机在线", m_ConnectionCount);
+	m_StatusBar.SetPaneText(0, v3);   //在状态条上显示文字
 }
 
 void CCrabRemoteServerDlg::ServerStart()
@@ -715,5 +763,99 @@ VOID CCrabRemoteServerDlg::AddClientInfo(CString ClientAddress, CString ClientPo
 	m_ClientInfoList.SetItemText(i, 6, WebSpeed);
 	m_ClientInfoList.SetItemData(i, (ULONG_PTR)ContextObject);  //插入到该排的隐藏区  删除
 
-	//ShowDialogMessage(TRUE, ClientAddress + "主机上线");
+	ShowMainDlgInfo(TRUE, ClientAddress + "主机上线");
+}
+
+void CCrabRemoteServerDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	// TODO: 在此处添加消息处理程序代码
+	if (m_StatusBar.m_hWnd != NULL)                         //状态栏
+	{
+		CRect Rect;
+		Rect.top = cy - 20;
+		Rect.left = 0;
+		Rect.right = cx;
+		Rect.bottom = cy;
+		m_StatusBar.MoveWindow(Rect);
+		m_StatusBar.SetPaneInfo(0, m_StatusBar.GetItemID(0), SBPS_POPOUT, cx);
+	}
+}
+
+
+void CCrabRemoteServerDlg::OnNMRClickClientInformationList(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	// TODO: 在此添加控件通知处理程序代码
+
+	CMenu Menu;
+	Menu.LoadMenu(IDR_CLIENT_INFO_LIST_MENU);
+	CPoint Point;  //x y
+	GetCursorPos(&Point); //获得鼠标位置   
+	Menu.GetSubMenu(0)->TrackPopupMenu(
+		TPM_LEFTBUTTON | TPM_RIGHTBUTTON,
+		Point.x, Point.y, this, NULL);
+
+
+	*pResult = 0;
+}
+
+
+void CCrabRemoteServerDlg::OnDeleteConnection()
+{
+	// TODO: 在此添加命令处理程序代码
+		//发送数据到客户端
+	BYTE IsToken = CLIENT_GET_OUT_REQUIRE;
+	SendingSelectedCommand(&IsToken, sizeof(BYTE));   //构建客户端数据包
+
+	//清除ListControl列表
+	CString  ClientAddress;
+	int SelectedCount = m_ClientInfoList.GetSelectedCount();
+	int i = 0;
+	for (i = 0; i < SelectedCount; i++)
+	{
+		POSITION Position = m_ClientInfoList.GetFirstSelectedItemPosition();
+		int Item = m_ClientInfoList.GetNextSelectedItem(Position);
+		ClientAddress = m_ClientInfoList.GetItemText(Item, 0);   //第几排  第0列
+		//销毁列表项
+		m_ClientInfoList.DeleteItem(Item);
+		ClientAddress += "强制断开";
+		ShowMainDlgInfo(TRUE, ClientAddress);
+	}
+
+}
+
+
+void CCrabRemoteServerDlg::OnInstantMessage()
+{
+	// TODO: 在此添加命令处理程序代码
+}
+
+
+void CCrabRemoteServerDlg::OnRemoteShutdown()
+{
+	// TODO: 在此添加命令处理程序代码
+}
+
+
+
+//将数据包发送至客户端
+VOID CCrabRemoteServerDlg::SendingSelectedCommand(PBYTE BufferData, ULONG BufferLength)
+{
+
+	//从ListControl上的隐藏项中选取中Context
+	POSITION Position = m_ClientInfoList.GetFirstSelectedItemPosition();
+	//该代码支持多项选择
+	while (Position)
+	{
+		int	Item = m_ClientInfoList.GetNextSelectedItem(Position);
+		//获得该排的隐藏数据项得到Context
+		CONTEXT_OBJECT* ContextObject = (CONTEXT_OBJECT*)m_ClientInfoList.GetItemData(Item);   //上线显示的函数中插入一个Context隐藏数据
+
+		 
+		//通信类负责发送数据
+		m_iocpServer->OnPrepareSending(ContextObject, BufferData, BufferLength);
+
+	}
 }

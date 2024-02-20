@@ -42,12 +42,14 @@ public:
 	CTrueColorToolBar m_TrueColorToolBar;	//控件变量的声明
 	NOTIFYICONDATA      m_NotifyIconData;	//托盘成员
 	ConfigFile  m_configFile;
+	CStatusBar          m_StatusBar;        //关联控件 构造函数 与 DoDataExchange
 
 	int m_listenPort;
 	int m_maxConnections;
 
 	CIocpServer* m_iocpServer;
-	
+
+	ULONG m_ConnectionCount = 0;
 
 public:
 	//初始化表格 
@@ -100,4 +102,12 @@ public:
 		CString HostName,
 		CString OsName, CString ProcessorNameString, CString IsWebCameraExist,
 		CString WebSpeed, CONTEXT_OBJECT* ContextObject);
+
+	VOID StatusBarInit();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnNMRClickClientInformationList(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnDeleteConnection();
+	afx_msg void OnInstantMessage();
+	afx_msg void OnRemoteShutdown();
+	VOID SendingSelectedCommand(PBYTE BufferData, ULONG BufferLength);
 };
