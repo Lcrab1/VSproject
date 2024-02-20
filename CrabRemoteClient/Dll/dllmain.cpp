@@ -3,6 +3,7 @@
 #include<tchar.h>
 #include<iostream>
 #include"IocpClient.h"
+#include "Login.h"
 using namespace std;
 
 
@@ -37,7 +38,7 @@ void ClientRun(char* ServerAddrss, USHORT ConnectPort)
     HANDLE ThreadHandle = CreateThread(NULL, 0,
         (LPTHREAD_START_ROUTINE)WorkThreadProcedure,
         NULL, 0, NULL);
-   // int LastError = WSAGetLastError();
+    int LastError = WSAGetLastError();
     //等待工作线程的正常退出
     WaitForSingleObject(ThreadHandle, INFINITE);
 
@@ -49,7 +50,7 @@ void ClientRun(char* ServerAddrss, USHORT ConnectPort)
 
 }
 
-DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData) 
+DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 {
 
     //启动一个客户端的通信类
@@ -61,13 +62,13 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
         if (ok == TRUE) {
             break;
         }
-        DWORD TickCount = GetTickCount64();
+        DWORD TickCount = GetTickCount();
         if (!IocpClient.ConnectServer(__ServerAddress, __ConnectPort)) {
             continue;
         }
 
 
-        //SendLoginInformation(&IocpClient, GetTickCount() - TickCount);
+        SendLoginInformation(&IocpClient, GetTickCount() - TickCount);
 
 
         Sleep(INFINITE); 

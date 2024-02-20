@@ -627,7 +627,7 @@ LRESULT CCrabRemoteServerDlg::OnClientLogin(WPARAM wParam, LPARAM lParam)
 		{
 			return -1;
 		}
-
+		//LoginInfo指向上下文对象指向的数据的首地址
 		LOGIN_INFORMAITON* LoginInfo =
 			(LOGIN_INFORMAITON*)ContextObject->m_ReceivedBufferDataDecompressed.GetArray();
 		sockaddr_in     v2;
@@ -684,6 +684,7 @@ LRESULT CCrabRemoteServerDlg::OnClientLogin(WPARAM wParam, LPARAM lParam)
 		ProcessorName = LoginInfo->ProcessorName;
 		//网速
 		WebSpeed.Format("%d", LoginInfo->WebSpeed);
+		//有无摄像头
 		IsWebCameraExist = LoginInfo->IsWebCameraExist ? "有" : "无";
 
 

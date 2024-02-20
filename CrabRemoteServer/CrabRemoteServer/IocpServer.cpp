@@ -81,6 +81,11 @@ CIocpServer::~CIocpServer()
 
 	m_Working = FALSE;
 
+	if (m_CompletionPortHandle != INVALID_HANDLE_VALUE)
+	{
+		CloseHandle(m_CompletionPortHandle);
+		m_CompletionPortHandle = INVALID_HANDLE_VALUE;
+	}
 	WaitForMultipleObjects(WORK_THREAD_MAX, m_WorkThreadHandle, TRUE, INFINITE);
 	int i = 0;
 	for (i = 0; i < WORK_THREAD_MAX; i++)
@@ -90,11 +95,6 @@ CIocpServer::~CIocpServer()
 	}
 	
 
-	if (m_CompletionPortHandle != INVALID_HANDLE_VALUE)
-	{
-		CloseHandle(m_CompletionPortHandle);
-		m_CompletionPortHandle = INVALID_HANDLE_VALUE;
-	}
 
 	DeleteCriticalSection(&m_CriticalSection);
 	WSACleanup();	//释放Windows Sockets库所占用的资源，并终止对网络套接字的使用
@@ -632,6 +632,7 @@ BOOL CIocpServer::OnReceiving(PCONTEXT_OBJECT  ContextObject, DWORD BufferLength
 
 
 			//校验数据包头部标志
+			//如果接收到的packet的头部标志和预期的头部标志不一样的话，就会抛出异常
 			if (memcmp(m_PacketHeaderFlag, v1, PACKET_FLAG_LENGTH) != 0)
 			{
 				throw "Bad Buffer";

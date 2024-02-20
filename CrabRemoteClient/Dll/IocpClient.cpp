@@ -73,7 +73,6 @@ BOOL CIocpClient::ConnectServer(char* ServerAddress, unsigned short ConnectPort)
 	//服务器到客户端的数据
 	m_WorkThreadHandle = (HANDLE)CreateThread(NULL, 0,
 		(LPTHREAD_START_ROUTINE)WorkThreadProcedure, (LPVOID)this, 0, NULL);   //接收数据
-	return 0;
 }
 
 DWORD WINAPI CIocpClient::WorkThreadProcedure(LPVOID ParameterData)
@@ -133,7 +132,7 @@ VOID CIocpClient::Disconnect()
 {
 	CancelIo((HANDLE)m_ClientSocket);
 	InterlockedExchange((LPLONG)&m_IsReceiving, FALSE);
-	m_IsReceiving = FALSE;
+	//m_IsReceiving = FALSE;
 	closesocket(m_ClientSocket);
 	SetEvent(m_EventHandle);
 	m_ClientSocket = INVALID_SOCKET;
