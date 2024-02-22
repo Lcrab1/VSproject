@@ -159,7 +159,9 @@
     <ClInclude Include="CArray.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IocpClient.h" />
+    <ClInclude Include="KernelManager.h" />
     <ClInclude Include="Login.h" />
+    <ClInclude Include="Manager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="zconf.h" />
     <ClInclude Include="zlib.h" />
@@ -169,7 +171,9 @@
     <ClCompile Include="Common.h" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="IocpClient.cpp" />
+    <ClCompile Include="KernelManager.cpp" />
     <ClCompile Include="Login.cpp" />
+    <ClCompile Include="Manager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

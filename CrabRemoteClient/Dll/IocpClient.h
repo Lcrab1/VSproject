@@ -6,6 +6,7 @@
 #include"CArray.h"
 #include"zconf.h"
 #include"zlib.h"
+#include"Manager.h"
 
 using namespace std;
 #pragma comment(lib,"WS2_32.lib")
@@ -25,6 +26,11 @@ public:
 	{
 		return m_IsReceiving;
 	}
+	VOID SetManagerObject(class CManager* Manager)
+	{
+		//面向对象(多态(抽象类指针指向实例对象地址))
+		m_Manager = Manager;
+	}
 	VOID Disconnect();
 	VOID OnReceiving(char* BufferData, ULONG BufferLength);
 	int OnSending(char* BufferData, ULONG BufferLength);
@@ -32,9 +38,13 @@ public:
 
 private:
 	BOOL m_IsReceiving = TRUE;
-	CArray_ m_SendCompressedBufferData;
+	CArray_  m_SendBufferDataCompressed;
+	CArray_  m_ReceivedBufferDataCompressed;
+	CArray_  m_ReceivedBufferDataDecompressed;
 	char m_PacketHeaderFlag[PACKET_FLAG_LENGTH];
 
+	//多态性
+	CManager* m_Manager;
 public:
 	SOCKET m_ClientSocket;
 	HANDLE m_WorkThreadHandle;

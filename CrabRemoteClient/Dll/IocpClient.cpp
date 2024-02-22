@@ -142,11 +142,104 @@ VOID CIocpClient::Disconnect()
 VOID CIocpClient::OnReceiving(char* BufferData, ULONG BufferLength)
 {
 	//数据进行解压
+//接到的数据进行解压缩
+	try
+	{
+		if (BufferLength == 0)
+		{
+			Disconnect();       //错误处理
+			return;
+		}
+		//将接收到的数据存储到m_ReceivedCompressedBufferData
+		m_ReceivedBufferDataCompressed.WriteArray((LPBYTE)BufferData, BufferLength);
+
+		//检测数据是否大于数据头大小如果不是那就不是正确的数据
+		while (m_ReceivedBufferDataCompressed.GetArrayLength() > PACKET_HEADER_LENGTH)
+		{
+			char v1[PACKET_FLAG_LENGTH] = { 0 };
+			CopyMemory(v1, m_ReceivedBufferDataCompressed.GetArray(), PACKET_FLAG_LENGTH);
+			//判断数据头
+			if (memcmp(m_PacketHeaderFlag, v1, PACKET_FLAG_LENGTH) != 0)
+			{
+				throw "Bad Buffer";
+			}
+
+			ULONG PackTotalLength = 0;
+			CopyMemory(&PackTotalLength, m_ReceivedBufferDataCompressed.GetArray(PACKET_FLAG_LENGTH),
+				sizeof(ULONG));
+
+			//数据的大小正确判断
+			if (PackTotalLength &&
+				(m_ReceivedBufferDataCompressed.GetArrayLength()) >= PackTotalLength)
+			{
+
+
+				m_ReceivedBufferDataCompressed.ReadArray((PBYTE)v1, PACKET_FLAG_LENGTH);
+
+				m_ReceivedBufferDataCompressed.ReadArray((PBYTE)&PackTotalLength, sizeof(ULONG));
+
+				ULONG DecompressedLength = 0;
+				m_ReceivedBufferDataCompressed.ReadArray((PBYTE)&DecompressedLength, sizeof(ULONG));
+
+
+				ULONG CompressedLength = PackTotalLength - PACKET_HEADER_LENGTH;
+				PBYTE CompressedData = new BYTE[CompressedLength];
+				PBYTE DecompressedData = new BYTE[DecompressedLength];
+
+
+				if (CompressedData == NULL || DecompressedData == NULL)
+				{
+					throw "Bad Allocate";
+
+				}
+
+				m_ReceivedBufferDataCompressed.ReadArray(CompressedData, CompressedLength);
+				int	IsOk = uncompress(DecompressedData,
+					&DecompressedLength, CompressedData, CompressedLength);
+
+
+				if (IsOk == Z_OK)//如果解压成功
+				{
+					m_ReceivedBufferDataDecompressed.ClearArray();
+					m_ReceivedBufferDataDecompressed.WriteArray(DecompressedData,
+						DecompressedLength);
+
+
+					delete[] CompressedData;
+					delete[] DecompressedData;
+
+
+
+					//MessageBox(NULL, 0, 0, 0);
+					//注意这里
+					// 
+					//虚拟多态
+					m_Manager->HandleIo((PBYTE)m_ReceivedBufferDataDecompressed.GetArray(0),
+						m_ReceivedBufferDataDecompressed.GetArrayLength());
+				}
+				else
+				{
+					delete[] CompressedData;
+					delete[] DecompressedData;
+					throw "Bad Buffer";
+				}
+
+			}
+			else
+				break;
+		}
+	}
+	catch (...)
+	{
+		m_ReceivedBufferDataCompressed.ClearArray();
+		m_ReceivedBufferDataDecompressed.ClearArray();
+	}
+
 }
 
 int CIocpClient::OnSending(char* BufferData, ULONG BufferLength)
 {
-	m_SendCompressedBufferData.ClearArray();
+	m_SendBufferDataCompressed.ClearArray();
 
 	if (BufferLength > 0)
 	{
@@ -170,13 +263,13 @@ int CIocpClient::OnSending(char* BufferData, ULONG BufferLength)
 
 		//计算数据包总长
 		ULONG PackTotalLength = CompressedLength + PACKET_HEADER_LENGTH;
-		m_SendCompressedBufferData.WriteArray((PBYTE)m_PacketHeaderFlag, sizeof(m_PacketHeaderFlag));
+		m_SendBufferDataCompressed.WriteArray((PBYTE)m_PacketHeaderFlag, sizeof(m_PacketHeaderFlag));
 		//Shine
-		m_SendCompressedBufferData.WriteArray((PBYTE)&PackTotalLength, sizeof(ULONG));
+		m_SendBufferDataCompressed.WriteArray((PBYTE)&PackTotalLength, sizeof(ULONG));
 		//ShinePackTotalLength
-		m_SendCompressedBufferData.WriteArray((PBYTE)&BufferLength, sizeof(ULONG));
+		m_SendBufferDataCompressed.WriteArray((PBYTE)&BufferLength, sizeof(ULONG));
 		//ShinePackTotalLengthBufferLength
-		m_SendCompressedBufferData.WriteArray(CompressedData, CompressedLength);
+		m_SendBufferDataCompressed.WriteArray(CompressedData, CompressedLength);
 		//[Shine][PackTotalLength][BufferLength][........(压缩后的真实数据)]
 
 		delete[] CompressedData;   //销毁内存
@@ -185,8 +278,8 @@ int CIocpClient::OnSending(char* BufferData, ULONG BufferLength)
 	}
 
 	//分段发送数据
-	return SendWithSplit((char*)m_SendCompressedBufferData.GetArray(),
-		m_SendCompressedBufferData.GetArrayLength(),
+	return SendWithSplit((char*)m_SendBufferDataCompressed.GetArray(),
+		m_SendBufferDataCompressed.GetArrayLength(),
 		MAX_SEND_BUFFER);
 
 }

