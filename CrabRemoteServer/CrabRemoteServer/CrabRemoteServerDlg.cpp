@@ -653,6 +653,14 @@ VOID CCrabRemoteServerDlg::WndHandleIo(CONTEXT_OBJECT* ContextObject)
 
 		break;
 	}
+	case CLIENT_GET_OUT_REPLY:
+	{
+		CancelIo((HANDLE)ContextObject->clientSocket);  //回收在当前对象上的异步请求
+		closesocket(ContextObject->clientSocket);
+		ContextObject->clientSocket = NULL;
+		Sleep(10);
+		break;
+	}
 
 
 	}

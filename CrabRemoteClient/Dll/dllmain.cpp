@@ -96,8 +96,6 @@ DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData)
 
         //退出整个循环
         ok = TRUE;
-
-        Sleep(INFINITE); 
     }
 
 
