@@ -31,6 +31,11 @@ public:
 		//面向对象(多态(抽象类指针指向实例对象地址))
 		m_Manager = Manager;
 	}
+	VOID WaitingForEvent()
+	{
+		//避免对象销毁
+		WaitForSingleObject(m_EventHandle, INFINITE);
+	}
 	VOID Disconnect();
 	VOID OnReceiving(char* BufferData, ULONG BufferLength);
 	int OnSending(char* BufferData, ULONG BufferLength);
@@ -51,3 +56,4 @@ public:
 	HANDLE m_EventHandle;
 };
 
+	

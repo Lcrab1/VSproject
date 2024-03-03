@@ -1,11 +1,6 @@
 ﻿// dllmain.cpp : 定义 DLL 应用程序的入口点。
 #include "pch.h"
-#include<tchar.h>
-#include<iostream>
-#include"IocpClient.h"
-#include "Login.h"
-#include"KernelManager.h"
-using namespace std;
+#include "dllmain.h"
 
 
 char __ServerAddress[MAX_PATH] = { 0 };

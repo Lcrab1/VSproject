@@ -9,6 +9,7 @@
 #include"IocpServer.h"
 #include"Common.h"
 #include"Login.h"
+#include"InstantMessageDlg.h"
 
 // CCrabRemoteServerDlg 对话框
 class CCrabRemoteServerDlg : public CDialogEx
@@ -110,4 +111,5 @@ public:
 	afx_msg void OnInstantMessage();
 	afx_msg void OnRemoteShutdown();
 	VOID SendingSelectedCommand(PBYTE BufferData, ULONG BufferLength);
+	afx_msg LRESULT OnOpenInstantMessageDialog(WPARAM ParameterData1, LPARAM ParameterData2);
 };

@@ -57,3 +57,4 @@ enum
 };
 
 #define UM_CLIENT_LOGIN                  WM_USER+1000
+#define UM_OPEN_REMOTE_MESSAGE_DIALOG    WM_USER+1005

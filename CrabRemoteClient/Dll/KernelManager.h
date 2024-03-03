@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "Manager.h"
+#include"dllmain.h"
+#include"InstantMessageManager.h"
 class CKernelManager:public CManager
 {
 public:
@@ -7,5 +9,8 @@ public:
 	~CKernelManager();
 	void HandleIo(PBYTE BufferData, ULONG_PTR BufferLength);
 private:
+	HANDLE m_ThreadHandle[0x1000];
+	int    m_ThreadHandleCount;
 };
 
+DWORD WINAPI RemoteMessageProcedure(LPVOID ParameterData);

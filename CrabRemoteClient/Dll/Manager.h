@@ -14,11 +14,12 @@ class CManager
 public:
 	CManager(CIocpClient* IocpClient);
 	~CManager();
-
+	VOID WaitingForDialogOpen();
 	virtual void HandleIo(PBYTE BufferData, ULONG_PTR BufferLength)
 	{
 
 	}
 public:
 	CIocpClient* m_IocpClient;   //通信类对象指针
+	HANDLE m_EventOpenDialogHandle;
 };

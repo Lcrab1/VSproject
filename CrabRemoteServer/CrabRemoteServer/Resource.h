@@ -18,6 +18,8 @@
 #define IDI_ICO_SEVER_MANAGER           145
 #define IDR_MENU1                       146
 #define IDR_CLIENT_INFO_LIST_MENU       146
+#define IDD_DIALOG1                     147
+#define IDD_INSTANT_MESSAGE_DIALOG      147
 #define CRAB_SERVER_INFORMATION_LIST    1000
 #define CRAB_CLIENT_INFORMATION_LIST    1001
 #define IDC_SET_LISTEN_PORT             1003
@@ -50,7 +52,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        147
+#define _APS_NEXT_RESOURCE_VALUE        149
 #define _APS_NEXT_COMMAND_VALUE         32806
 #define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           101

@@ -137,6 +137,8 @@ BEGIN_MESSAGE_MAP(CCrabRemoteServerDlg, CDialogEx)
 	ON_COMMAND(ID_DELETE_CONNECTION, &CCrabRemoteServerDlg::OnDeleteConnection)
 	ON_COMMAND(ID_INSTANT_MESSAGE, &CCrabRemoteServerDlg::OnInstantMessage)
 	ON_COMMAND(ID_REMOTE_SHUTDOWN, &CCrabRemoteServerDlg::OnRemoteShutdown)
+
+	ON_MESSAGE(UM_OPEN_REMOTE_MESSAGE_DIALOG, OnOpenInstantMessageDialog)
 END_MESSAGE_MAP()
 
 
@@ -661,7 +663,12 @@ VOID CCrabRemoteServerDlg::WndHandleIo(CONTEXT_OBJECT* ContextObject)
 		Sleep(10);
 		break;
 	}
+	case CLIENT_REMOTE_MESSAGE_REPLY:
+	{
 
+		__ServerProjectDlg->PostMessage(UM_OPEN_REMOTE_MESSAGE_DIALOG, 0, (LPARAM)ContextObject);
+		break;
+	}
 
 	}
 }
@@ -838,6 +845,8 @@ void CCrabRemoteServerDlg::OnDeleteConnection()
 void CCrabRemoteServerDlg::OnInstantMessage()
 {
 	// TODO: 在此添加命令处理程序代码
+	BYTE IsToken = CLIENT_REMOTE_MESSAGE_REQUIRE;
+	SendingSelectedCommand(&IsToken, sizeof(BYTE));
 }
 
 
@@ -866,4 +875,16 @@ VOID CCrabRemoteServerDlg::SendingSelectedCommand(PBYTE BufferData, ULONG Buffer
 		m_iocpServer->OnPrepareSending(ContextObject, BufferData, BufferLength);
 
 	}
+}LRESULT CCrabRemoteServerDlg::OnOpenInstantMessageDialog(WPARAM ParameterData1, LPARAM ParameterData2)
+{
+	//创建一个远程消息对话框
+	PCONTEXT_OBJECT ContextObject = (CONTEXT_OBJECT*)ParameterData2;
+
+	//动态窗口
+	CInstantMessageDlg* Dialog = new CInstantMessageDlg(this, m_iocpServer, ContextObject);
+	// 设置父窗口为卓面
+	Dialog->Create(IDD_INSTANT_MESSAGE_DIALOG, GetDesktopWindow());    //创建非阻塞的Dlg
+	Dialog->ShowWindow(SW_SHOW);
+
+	return 0;
 }

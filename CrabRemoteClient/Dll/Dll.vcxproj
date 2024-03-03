@@ -157,7 +157,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CArray.h" />
+    <ClInclude Include="dllmain.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="InstantMessageManager.h" />
     <ClInclude Include="IocpClient.h" />
     <ClInclude Include="KernelManager.h" />
     <ClInclude Include="Login.h" />
@@ -170,6 +172,7 @@
     <ClCompile Include="CArray.cpp" />
     <ClCompile Include="Common.h" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="InstantMessageManager.cpp" />
     <ClCompile Include="IocpClient.cpp" />
     <ClCompile Include="KernelManager.cpp" />
     <ClCompile Include="Login.cpp" />

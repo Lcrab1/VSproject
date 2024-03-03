@@ -37,6 +37,9 @@
     <Filter Include="压缩库">
       <UniqueIdentifier>{09e46673-5cd4-49f0-844d-99f56e14b343}</UniqueIdentifier>
     </Filter>
+    <Filter Include="即时消息">
+      <UniqueIdentifier>{e2fb626c-e777-4858-9a74-7502ac545c34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -84,6 +87,9 @@
     <ClInclude Include="zlib.h">
       <Filter>压缩库</Filter>
     </ClInclude>
+    <ClInclude Include="InstantMessageDlg.h">
+      <Filter>即时消息</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -115,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="Common.h">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="InstantMessageDlg.cpp">
+      <Filter>即时消息</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
