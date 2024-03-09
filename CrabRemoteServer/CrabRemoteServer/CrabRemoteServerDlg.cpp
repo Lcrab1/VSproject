@@ -875,7 +875,9 @@ VOID CCrabRemoteServerDlg::SendingSelectedCommand(PBYTE BufferData, ULONG Buffer
 		m_iocpServer->OnPrepareSending(ContextObject, BufferData, BufferLength);
 
 	}
-}LRESULT CCrabRemoteServerDlg::OnOpenInstantMessageDialog(WPARAM ParameterData1, LPARAM ParameterData2)
+}
+
+LRESULT CCrabRemoteServerDlg::OnOpenInstantMessageDialog(WPARAM ParameterData1, LPARAM ParameterData2)
 {
 	//创建一个远程消息对话框
 	PCONTEXT_OBJECT ContextObject = (CONTEXT_OBJECT*)ParameterData2;

@@ -9,3 +9,4 @@ using namespace std;
 
 extern char  __ServerAddress[MAX_PATH];
 extern unsigned short __ConnectPort;
+extern HINSTANCE __InstanceHandle;

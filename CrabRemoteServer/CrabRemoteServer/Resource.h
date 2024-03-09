@@ -25,6 +25,7 @@
 #define IDC_SET_LISTEN_PORT             1003
 #define IDC_SET_MAX_CONNECTS            1004
 #define IDC_APPLY_BUTTON                1005
+#define IDC_SERVER_INFORMATION_LIST     1006
 #define ID_MENU_EXIT                    32775
 #define ID_MENU_SET_LOCAL               32777
 #define ID_MENU_ADD_INFORMATION         32780
@@ -54,7 +55,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        149
 #define _APS_NEXT_COMMAND_VALUE         32806
-#define _APS_NEXT_CONTROL_VALUE         1006
+#define _APS_NEXT_CONTROL_VALUE         1007
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

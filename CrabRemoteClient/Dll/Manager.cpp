@@ -18,9 +18,3 @@ CManager::~CManager()
 	CloseHandle(m_EventOpenDialogHandle);
 }
 
-VOID CManager::WaitingForDialogOpen()
-{
-	WaitForSingleObject(m_EventOpenDialogHandle, INFINITE);
-	//必须的Sleep,因为远程窗口从InitDialog中发送COMMAND_NEXT到显示还要一段时间
-	Sleep(150);
-}

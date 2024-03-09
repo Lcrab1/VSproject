@@ -86,6 +86,7 @@ CIocpServer::~CIocpServer()
 		CloseHandle(m_CompletionPortHandle);
 		m_CompletionPortHandle = INVALID_HANDLE_VALUE;
 	}
+
 	WaitForMultipleObjects(WORK_THREAD_MAX, m_WorkThreadHandle, TRUE, INFINITE);
 	int i = 0;
 	for (i = 0; i < WORK_THREAD_MAX; i++)

@@ -3,7 +3,8 @@
 #include "Common.h"
 CKernelManager::CKernelManager(CIocpClient* IocpClient) :CManager(IocpClient)
 {
-
+	int    m_ThreadHandleCount = 0;
+	memset(m_ThreadHandle, 0, sizeof(m_ThreadHandle));
 }
 CKernelManager::~CKernelManager()
 {

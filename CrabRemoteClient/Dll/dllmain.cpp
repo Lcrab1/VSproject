@@ -5,7 +5,7 @@
 
 char __ServerAddress[MAX_PATH] = { 0 };
 USHORT __ConnectPort = 0;
-
+HINSTANCE __InstanceHandle = NULL;
 DWORD WINAPI WorkThreadProcedure(LPVOID ParameterData);
 
 
@@ -17,6 +17,10 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
+    {
+        __InstanceHandle = hModule;
+        break;
+    }
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
