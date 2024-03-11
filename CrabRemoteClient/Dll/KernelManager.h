@@ -2,6 +2,8 @@
 #include "Manager.h"
 #include"dllmain.h"
 #include"InstantMessageManager.h"
+#include"ProcessHelper.h"
+#include"SystemHelper.h"
 class CKernelManager:public CManager
 {
 public:

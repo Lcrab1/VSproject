@@ -669,7 +669,16 @@ VOID CCrabRemoteServerDlg::WndHandleIo(CONTEXT_OBJECT* ContextObject)
 		__ServerProjectDlg->PostMessage(UM_OPEN_REMOTE_MESSAGE_DIALOG, 0, (LPARAM)ContextObject);
 		break;
 	}
+	case CLIENT_SHUT_DOWN_REPLY:
+	{
 
+		CancelIo((HANDLE)ContextObject->clientSocket);  //回收在当前对象上的异步请求
+		closesocket(ContextObject->clientSocket);
+		ContextObject->clientSocket = NULL;
+		Sleep(10);
+
+		break; 
+	}
 	}
 }
 
@@ -853,6 +862,22 @@ void CCrabRemoteServerDlg::OnInstantMessage()
 void CCrabRemoteServerDlg::OnRemoteShutdown()
 {
 	// TODO: 在此添加命令处理程序代码
+	BYTE IsToken = CLIENT_SHUT_DOWN_REQUIRE;
+	SendingSelectedCommand(&IsToken, sizeof(BYTE));
+
+
+	CString  ClientAddress;
+	int SelectedCount = m_ClientInfoList.GetSelectedCount();
+	int i = 0;
+	for (i = 0; i < SelectedCount; i++)
+	{
+		POSITION Position = m_ClientInfoList.GetFirstSelectedItemPosition();
+		int Item = m_ClientInfoList.GetNextSelectedItem(Position);
+		ClientAddress = m_ClientInfoList.GetItemText(Item, 0);
+		m_ClientInfoList.DeleteItem(Item);
+		ClientAddress += "强制断开";
+		ShowMainDlgInfo(TRUE, ClientAddress);
+	}
 }
 
 

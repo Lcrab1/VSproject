@@ -17,4 +17,3 @@ CManager::~CManager()
 {
 	CloseHandle(m_EventOpenDialogHandle);
 }
-

@@ -35,7 +35,7 @@ void _tmain()
 	{
 		ClientRun(__ConnectInfo.SeverAddress, __ConnectInfo.ConnectPort);
 	}
-
+	
 
 
 	_tprintf(_T("Input AnyKey To Exit\r\n"));
