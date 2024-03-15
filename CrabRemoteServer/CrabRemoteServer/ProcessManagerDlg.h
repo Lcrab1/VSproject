@@ -30,4 +30,14 @@ public:
 
 
 
+	afx_msg void OnRefreshProcess();
+	afx_msg void OnKillProcess();
+	afx_msg void OnSuspendProcess();
+	afx_msg void OnResumeProcess();
+	afx_msg void OnProcessModules();
+	afx_msg void OnProcessThreads();
+	afx_msg void OnProcessMemory();
+	afx_msg void OnProcessHandles();
+	afx_msg void OnRclickProcessInfoList(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnCustomdrawProcessInfoList(NMHDR* pNMHDR, LRESULT* pResult);
 };
