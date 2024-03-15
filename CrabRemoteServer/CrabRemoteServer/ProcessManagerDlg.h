@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include"IocpServer.h"
-
+#include"Common.h"
 // CProcessManagerDlg 对话框
 
 class CProcessManagerDlg : public CDialogEx
@@ -27,7 +27,9 @@ public:
 	afx_msg void OnClose();
 	virtual BOOL OnInitDialog();
 	CListCtrl m_ProcessInfoList;
-
+	void GetProcessInfoList();
+	void ShowProcessInfoList(void);
+	void OnReceiveComplete(void);
 
 
 	afx_msg void OnRefreshProcess();
