@@ -663,6 +663,8 @@ VOID CCrabRemoteServerDlg::WndHandleIo(CONTEXT_OBJECT* ContextObject)
 		Sleep(10);
 		break;
 	}
+
+	//即时消息
 	case CLIENT_REMOTE_MESSAGE_REPLY:
 	{
 
@@ -679,6 +681,15 @@ VOID CCrabRemoteServerDlg::WndHandleIo(CONTEXT_OBJECT* ContextObject)
 
 		break; 
 	}
+
+	case CLIENT_PROCESS_MANAGER_REPLY:
+	{
+		__ServerProjectDlg->PostMessage(UM_OPEN_PROCESS_MANAGER_DIALOG, 0, (LPARAM)ContextObject);
+		break;
+	}
+
+
+
 	}
 }
 

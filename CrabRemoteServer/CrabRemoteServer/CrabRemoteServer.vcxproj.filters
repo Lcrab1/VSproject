@@ -40,6 +40,9 @@
     <Filter Include="即时消息">
       <UniqueIdentifier>{e2fb626c-e777-4858-9a74-7502ac545c34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="进程管理">
+      <UniqueIdentifier>{5d30d958-51d5-4635-ad16-15d137167bda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
