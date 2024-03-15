@@ -16,9 +16,7 @@
 #define IDD_SERVER_MANAGER_DIALOG       139
 #define IDB_PNG_SERVER_MANAGER          144
 #define IDI_ICO_SEVER_MANAGER           145
-#define IDR_MENU1                       146
 #define IDR_CLIENT_INFO_LIST_MENU       146
-#define IDD_DIALOG1                     147
 #define IDD_INSTANT_MESSAGE_DIALOG      147
 #define IDD_PROCESS_MANAGER_DIALOG      149
 #define CRAB_SERVER_INFORMATION_LIST    1000
@@ -27,7 +25,6 @@
 #define IDC_SET_MAX_CONNECTS            1004
 #define IDC_APPLY_BUTTON                1005
 #define IDC_SERVER_INFORMATION_LIST     1006
-#define IDC_LIST1                       1007
 #define IDC_PROCESS_INFO_LIST           1007
 #define ID_MENU_EXIT                    32775
 #define ID_MENU_SET_LOCAL               32777
@@ -46,7 +43,6 @@
 #define ID_CLIENT_MANAGER               32792
 #define ID_SERVER_ABOUT                 32793
 #define ID_SHOW_MAIN_DIALOG             32796
-#define ID_                             32797
 #define ID_HIDE_MAIN_DIALOG             32798
 #define ID_DELETE_CONNECTION            32803
 #define ID_INSTANT_MESSAGE              32804
