@@ -20,12 +20,15 @@
 #define IDR_CLIENT_INFO_LIST_MENU       146
 #define IDD_DIALOG1                     147
 #define IDD_INSTANT_MESSAGE_DIALOG      147
+#define IDD_PROCESS_MANAGER_DIALOG      149
 #define CRAB_SERVER_INFORMATION_LIST    1000
 #define CRAB_CLIENT_INFORMATION_LIST    1001
 #define IDC_SET_LISTEN_PORT             1003
 #define IDC_SET_MAX_CONNECTS            1004
 #define IDC_APPLY_BUTTON                1005
 #define IDC_SERVER_INFORMATION_LIST     1006
+#define IDC_LIST1                       1007
+#define IDC_PROCESS_INFO_LIST           1007
 #define ID_MENU_EXIT                    32775
 #define ID_MENU_SET_LOCAL               32777
 #define ID_MENU_ADD_INFORMATION         32780
@@ -53,9 +56,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        149
+#define _APS_NEXT_RESOURCE_VALUE        151
 #define _APS_NEXT_COMMAND_VALUE         32806
-#define _APS_NEXT_CONTROL_VALUE         1007
+#define _APS_NEXT_CONTROL_VALUE         1008
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

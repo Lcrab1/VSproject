@@ -93,6 +93,9 @@
     <ClInclude Include="InstantMessageDlg.h">
       <Filter>即时消息</Filter>
     </ClInclude>
+    <ClInclude Include="ProcessManagerDlg.h">
+      <Filter>进程管理</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -127,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="InstantMessageDlg.cpp">
       <Filter>即时消息</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessManagerDlg.cpp">
+      <Filter>进程管理</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
