@@ -35,7 +35,7 @@ public:
 	void GetProcessInfoList();
 	void ShowProcessInfoList(void);
 	void OnReceiveComplete(void);
-	CCreateProcessDlg* m_CreateProcessDlg;
+	//CCreateProcessDlg* m_CreateProcessDlg;
 
 	afx_msg void OnRefreshProcess();
 	afx_msg void OnKillProcess();

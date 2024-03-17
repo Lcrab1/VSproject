@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"IocpServer.h"
 #include"Common.h"
+#include"ProcessManagerDlg.h"
 // CCreateProcessDlg 对话框
 
 class CCreateProcessDlg : public CDialogEx
@@ -27,4 +28,5 @@ public:
 	virtual BOOL OnInitDialog();
 	CEdit m_ProcessName;
 	afx_msg void OnBnClickedProcessCreateButton();
+//	afx_msg void OnClose();
 };

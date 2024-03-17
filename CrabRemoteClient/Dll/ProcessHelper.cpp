@@ -53,7 +53,7 @@ BOOL XkIsWow64Process(HANDLE ProcessHandle, BOOL* isWow64Process)
 	Kernel32ModuleBase = GetModuleHandle(_T("kernel32.dll"));
 	if (Kernel32ModuleBase == NULL)
 	{
-		return FALSE;
+		return FALSE; 
 	}
 	typedef BOOL(__stdcall* LPFN_ISWOW64PROCESS)(HANDLE ProcessHandle, BOOL* isWow64Process);
 	LPFN_ISWOW64PROCESS  isWow64 = NULL;

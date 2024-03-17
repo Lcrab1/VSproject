@@ -32,6 +32,7 @@ void CCreateProcessDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CCreateProcessDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_PROCESS_CREATE_BUTTON, &CCreateProcessDlg::OnBnClickedProcessCreateButton)
+//	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -67,4 +68,14 @@ void CCreateProcessDlg::OnBnClickedProcessCreateButton()
 	memcpy(bufferData + sizeof(BYTE), processName, textContent.GetLength());
 
 	m_IocpServer->OnPrepareSending(m_ContextObject, bufferData, bufferLength);
+	
 }
+
+
+//void CCreateProcessDlg::OnClose()
+//{
+//	// TODO: 在此添加消息处理程序代码和/或调用默认值
+//
+//	__CProcessManagerDlg->PostMessage(WM_COMMAND, MAKEWPARAM(ID_REFRESH_PROCESS, BN_CLICKED));
+//	CDialogEx::OnClose();
+//}

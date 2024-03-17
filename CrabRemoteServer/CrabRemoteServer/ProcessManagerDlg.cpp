@@ -7,8 +7,11 @@
 #include "afxdialogex.h"
 
 
+
+
 // CProcessManagerDlg 对话框
 IMPLEMENT_DYNAMIC(CProcessManagerDlg, CDialogEx)
+
 
 CProcessManagerDlg::CProcessManagerDlg(CWnd* pParent, CIocpServer*
 	IocpServer, CONTEXT_OBJECT* ContextObject)
@@ -18,7 +21,7 @@ CProcessManagerDlg::CProcessManagerDlg(CWnd* pParent, CIocpServer*
 	m_ContextObject = ContextObject;
 
 	m_IconHwnd = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)); 
-	m_CreateProcessDlg = NULL;
+	//m_CreateProcessDlg = NULL;
 }
 
 CProcessManagerDlg::~CProcessManagerDlg()
@@ -80,7 +83,7 @@ BOOL CProcessManagerDlg::OnInitDialog()
 	v1.Format("\\\\%s - 远程进程管理", IsOk != INVALID_SOCKET ? inet_ntoa(ClientAddress.sin_addr) : "");
 	//设置对话框标题
 	SetWindowText(v1);
-
+	//__CProcessManagerDlg = this;
 
 
 	//设置对话框上数据
@@ -373,6 +376,8 @@ void CProcessManagerDlg::OnProcessCreate()
 	//  首先弹出一个二级窗口
 	//OnOpenProcessCreateDialog(0, (LPARAM)m_ContextObject);
 	PostMessage(UM_OPEN_CREATE_PROCESS_DIALOG,0, (LPARAM)m_ContextObject);
+	Sleep(100);
+
 }
 
 LRESULT CProcessManagerDlg::OnOpenProcessCreateDialog(WPARAM ParameterData1, LPARAM ParameterData2)
@@ -382,7 +387,7 @@ LRESULT CProcessManagerDlg::OnOpenProcessCreateDialog(WPARAM ParameterData1, LPA
 
 	//非阻塞对话框
 	CCreateProcessDlg* Dialog = new CCreateProcessDlg(this, m_IocpServer, ContextObject);
-	m_CreateProcessDlg = Dialog;
+	//m_CreateProcessDlg = Dialog;
 	// 设置父窗口为卓面
 	Dialog->Create(IDD_CREATE_PROCESS_DIALOG, GetDesktopWindow());    //创建非阻塞的Dlg
 	Dialog->ShowWindow(SW_SHOW);
