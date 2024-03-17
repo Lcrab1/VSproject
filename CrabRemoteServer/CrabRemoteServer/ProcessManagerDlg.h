@@ -53,3 +53,5 @@ public:
 
 	LRESULT OnOpenProcessCreateDialog(WPARAM ParameterData1, LPARAM ParameterData2);
 };
+
+extern CProcessManagerDlg* __CProcessManagerDlg;

@@ -7,7 +7,7 @@
 #include "afxdialogex.h"
 
 
-
+CProcessManagerDlg* __CProcessManagerDlg = NULL;
 
 // CProcessManagerDlg 对话框
 IMPLEMENT_DYNAMIC(CProcessManagerDlg, CDialogEx)
@@ -83,7 +83,7 @@ BOOL CProcessManagerDlg::OnInitDialog()
 	v1.Format("\\\\%s - 远程进程管理", IsOk != INVALID_SOCKET ? inet_ntoa(ClientAddress.sin_addr) : "");
 	//设置对话框标题
 	SetWindowText(v1);
-	//__CProcessManagerDlg = this;
+	__CProcessManagerDlg = this;
 
 
 	//设置对话框上数据

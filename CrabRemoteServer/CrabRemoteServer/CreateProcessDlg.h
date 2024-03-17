@@ -29,4 +29,5 @@ public:
 	CEdit m_ProcessName;
 	afx_msg void OnBnClickedProcessCreateButton();
 //	afx_msg void OnClose();
+	afx_msg void OnClose();
 };
