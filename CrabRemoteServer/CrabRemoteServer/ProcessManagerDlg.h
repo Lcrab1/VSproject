@@ -23,6 +23,9 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
 	DECLARE_MESSAGE_MAP()
+
+private:
+	HICON   	m_IconHwnd;   //用户对象  内核对象   HWND  HANDLE  都是对象 
 public:
 	afx_msg void OnClose();
 	virtual BOOL OnInitDialog();
@@ -42,4 +45,6 @@ public:
 	afx_msg void OnProcessHandles();
 	afx_msg void OnRclickProcessInfoList(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnCustomdrawProcessInfoList(NMHDR* pNMHDR, LRESULT* pResult);
+
+	void InitializeSolidMenu();
 };

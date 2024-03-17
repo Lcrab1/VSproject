@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Manager.h"
+#include"Common.h"
 class CProcessManager :
     public CManager
 {

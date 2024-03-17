@@ -17,6 +17,8 @@ CProcessManagerDlg::CProcessManagerDlg(CWnd* pParent, CIocpServer*
 {
 	m_IocpServer = IocpServer;
 	m_ContextObject = ContextObject;
+
+	m_IconHwnd = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME));
 }
 
 CProcessManagerDlg::~CProcessManagerDlg()
@@ -65,7 +67,7 @@ void CProcessManagerDlg::OnClose()
 BOOL CProcessManagerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
+	SetIcon(m_IconHwnd, FALSE);
 	// TODO:  在此添加额外的初始化
 	CString v1;
 	sockaddr_in  ClientAddress;
@@ -107,12 +109,15 @@ BOOL CProcessManagerDlg::OnInitDialog()
 		m_ProcessInfoList.InsertColumn(1, _T("进程镜像"), LVCFMT_LEFT, 180);
 		m_ProcessInfoList.InsertColumn(2, _T("程序路径"), LVCFMT_LEFT, 250);
 		m_ProcessInfoList.InsertColumn(3, _T("程序位数"), LVCFMT_LEFT, 120);
+		m_ProcessInfoList.InsertColumn(4, _T("进程个数"), LVCFMT_LEFT, 120);
 		ShowProcessInfoList();   //由于第一个发送来的消息后面紧跟着进程的数据所以把数据显示到列表当中\0\0
 		break;
 	}
 	default:
 		break;
 	}
+	InitializeSolidMenu();
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }
@@ -154,12 +159,12 @@ void CProcessManagerDlg::ShowProcessInfoList(void)
 
 	}
 
-	v1.Format(_T("程序个数 / %d"), i);
+	v1.Format(_T("进程个数 / %d"), i);
 	LVCOLUMN v3;
 	v3.mask = LVCF_TEXT;
 	v3.pszText = v1.GetBuffer(0);
 	v3.cchTextMax = v1.GetLength();
-	m_ProcessInfoList.SetColumn(3, &v3); //在列表中显示有多少个进程
+	m_ProcessInfoList.SetColumn(4, &v3); //在列表中显示有多少个进程
 }
 
 void CProcessManagerDlg::OnReceiveComplete(void)
@@ -192,8 +197,77 @@ void CProcessManagerDlg::OnRefreshProcess()
 void CProcessManagerDlg::OnKillProcess()
 {
 	// TODO: 在此添加命令处理程序代码
+	CListCtrl* ListCtrl = NULL;
+	if (m_ProcessInfoList.IsWindowVisible())
+		ListCtrl = &m_ProcessInfoList;
+	else
+		return;
+
+	//[KILL][ID][ID][iD][ID]
+	//非配缓冲区
+
+	//单字数据  网路数据			!!!为什么这里的sizeof使用HANDLE而不是DWORD?
+	LPBYTE BufferData = (LPBYTE)LocalAlloc(LPTR, 1 + (ListCtrl->GetSelectedCount() * sizeof(HANDLE)));//1.exe  4  ID   Handle
+	//加入结束进程的数据头
+	BufferData[0] = CLIENT_PROCESS_MANAGER_KILL_REQUIRE;
+	//显示警告信息
+	TCHAR* Tips = _T("警告: 终止进程会导致不希望发生的结果，\n"
+		"包括数据丢失和系统不稳定。在被终止前，\n"
+		"进程将没有机会保存其状态和数据。");
+	CString v1;
+
+	//选择了几项进程
+	if (ListCtrl->GetSelectedCount() > 1)
+	{
+		v1.Format(_T("%s确实\n想终止这%d项进程吗?"), Tips, ListCtrl->GetSelectedCount());
+	}
+	else
+	{
+		v1.Format(_T("%s确实\n想终止该项进程吗?"), Tips);
+	}
+	//SDK 
+	if (::MessageBox(m_hWnd, v1, _T("进程结束警告"), MB_YESNO | MB_ICONQUESTION) == IDNO)
+		return;
+	//MFC
+	/*
+	if (MessageBox(v1, _T("进程结束警告", MB_YESNO | MB_ICONQUESTION))== IDNO)
+	{
+		return;
+	}
+	*/
+	//Offset
+	//[Flag][][][][][]
+	DWORD	Offset = 1;
+	POSITION Position = ListCtrl->GetFirstSelectedItemPosition();
+	//得到要结束哪个进程
+
+
+	while (Position)
+	{
+		int	Item = ListCtrl->GetNextSelectedItem(Position);
+		HANDLE ProcessIdentity = (HANDLE)ListCtrl->GetItemData(Item);
+		memcpy(BufferData + Offset, &ProcessIdentity, sizeof(HANDLE));  //sdkfj101112
+		Offset += sizeof(HANDLE);
+	}
+	//发送数据到被控端在被控端中查找COMMAND_KILLPROCESS这个数据头
+	m_IocpServer->OnPrepareSending(m_ContextObject, BufferData, LocalSize(BufferData));
+	LocalFree(BufferData);
+
+	Sleep(100);
+
+
+	PostMessage(WM_COMMAND, MAKEWPARAM(ID_REFRESH_PROCESS, BN_CLICKED));
 }
 
+void CProcessManagerDlg::InitializeSolidMenu()
+{
+
+	HMENU  Object;    //定义一个菜单对象    将数据型数据转换成字符型数据
+	Object = LoadMenu(NULL, MAKEINTRESOURCE(IDR_PROCESS_MANAGER_DIALOG_MAIN_MENU));        //对象载入菜单资源
+	::SetMenu(this->GetSafeHwnd(), Object);                                       //将带有资源的菜单对象设置到主Dlg句柄上
+	::DrawMenuBar(this->GetSafeHwnd());                  //刷新显示
+
+}
 
 void CProcessManagerDlg::OnSuspendProcess()
 {

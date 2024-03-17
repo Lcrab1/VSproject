@@ -34,15 +34,15 @@
     <Filter Include="抽象类\进程管理">
       <UniqueIdentifier>{dc95fa30-1c69-4a60-ade7-0d10efe47e4b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="通信核心">
+      <UniqueIdentifier>{782f43ce-8e26-4430-ada6-2bb805d4d604}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="IocpClient.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Login.h">
@@ -84,12 +84,12 @@
     <ClInclude Include="MemoryHelper.h">
       <Filter>抽象类\内核管理</Filter>
     </ClInclude>
+    <ClInclude Include="IocpClient.h">
+      <Filter>通信核心</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="IocpClient.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -97,9 +97,6 @@
     </ClCompile>
     <ClCompile Include="Login.cpp">
       <Filter>用户上线</Filter>
-    </ClCompile>
-    <ClCompile Include="Common.h">
-      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CArray.cpp">
       <Filter>数据结构</Filter>
@@ -124,6 +121,12 @@
     </ClCompile>
     <ClCompile Include="MemoryHelper.cpp">
       <Filter>抽象类\内核管理</Filter>
+    </ClCompile>
+    <ClCompile Include="IocpClient.cpp">
+      <Filter>通信核心</Filter>
+    </ClCompile>
+    <ClCompile Include="Common.h">
+      <Filter>头文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -21,3 +21,4 @@ typedef struct PROCESS_INFORMATION_ITEM
 int EnableSeDebugPrivilege(HANDLE ProcessHandle, BOOL IsEnable, LPCTSTR RequireLevel);
 BOOL XkIsWow64Process(HANDLE ProcessHandle, BOOL* isWow64Process);
 BOOL EnumProcessByToolHelp32(vector<PROCESS_INFORMATION_ITEM>& ProcessInfo);
+VOID KillProcess(LPBYTE BufferData, UINT BufferLength);
