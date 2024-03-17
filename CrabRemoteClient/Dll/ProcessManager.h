@@ -9,5 +9,6 @@ public:
     ~CProcessManager();
     BOOL SendClientProcessList();
     void HandleIo(PBYTE BufferData, ULONG_PTR BufferLength);
+    void XkCreateProcess(PBYTE bufferData, ULONG_PTR BufferLength);
 };
 

@@ -184,6 +184,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CArray.h" />
+    <ClInclude Include="CreateProcessDlg.h" />
     <ClInclude Include="CriticalSection.h" />
     <ClInclude Include="ConfigFile.h" />
     <ClInclude Include="CrabRemoteServer.h" />
@@ -204,6 +205,7 @@
   <ItemGroup>
     <ClCompile Include="CArray.cpp" />
     <ClCompile Include="Common.h" />
+    <ClCompile Include="CreateProcessDlg.cpp" />
     <ClCompile Include="CriticalSection.cpp" />
     <ClCompile Include="ConfigFile.cpp" />
     <ClCompile Include="CrabRemoteServer.cpp" />

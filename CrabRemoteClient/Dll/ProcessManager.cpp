@@ -46,8 +46,18 @@ void CProcessManager::HandleIo(PBYTE BufferData, ULONG_PTR BufferLength)
 
 			break;
 		}
+		case CLIENT_PROCESS_MANAGER_CREATE_REQUIRE:
+		{
+			//SeCreateProcess1((LPBYTE)BufferData + sizeof(BYTE), BufferLength - sizeof(BYTE));
+			XkCreateProcess((LPBYTE)BufferData + sizeof(BYTE), BufferLength - sizeof(BYTE));
+		}
 	}
 }
+void CProcessManager::XkCreateProcess(PBYTE bufferData, ULONG_PTR BufferLength)
+{
+
+}
+
 BOOL CProcessManager::SendClientProcessList()
 {
 

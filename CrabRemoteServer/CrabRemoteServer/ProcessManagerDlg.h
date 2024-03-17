@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include"IocpServer.h"
 #include"Common.h"
+#include"CreateProcessDlg.h"
+#include"CrabRemoteServerDlg.h"
 // CProcessManagerDlg 对话框
 
 class CProcessManagerDlg : public CDialogEx
@@ -33,7 +35,7 @@ public:
 	void GetProcessInfoList();
 	void ShowProcessInfoList(void);
 	void OnReceiveComplete(void);
-
+	CCreateProcessDlg* m_CreateProcessDlg;
 
 	afx_msg void OnRefreshProcess();
 	afx_msg void OnKillProcess();
@@ -47,4 +49,7 @@ public:
 	afx_msg void OnCustomdrawProcessInfoList(NMHDR* pNMHDR, LRESULT* pResult);
 
 	void InitializeSolidMenu();
+	afx_msg void OnProcessCreate();
+
+	LRESULT OnOpenProcessCreateDialog(WPARAM ParameterData1, LPARAM ParameterData2);
 };

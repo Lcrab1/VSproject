@@ -8,7 +8,6 @@
 
 
 // CProcessManagerDlg 对话框
-
 IMPLEMENT_DYNAMIC(CProcessManagerDlg, CDialogEx)
 
 CProcessManagerDlg::CProcessManagerDlg(CWnd* pParent, CIocpServer*
@@ -18,7 +17,8 @@ CProcessManagerDlg::CProcessManagerDlg(CWnd* pParent, CIocpServer*
 	m_IocpServer = IocpServer;
 	m_ContextObject = ContextObject;
 
-	m_IconHwnd = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME));
+	m_IconHwnd = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)); 
+	m_CreateProcessDlg = NULL;
 }
 
 CProcessManagerDlg::~CProcessManagerDlg()
@@ -45,6 +45,9 @@ BEGIN_MESSAGE_MAP(CProcessManagerDlg, CDialogEx)
 	ON_COMMAND(ID_PROCESS_HANDLES, &CProcessManagerDlg::OnProcessHandles)
 	ON_NOTIFY(NM_RCLICK, IDC_PROCESS_INFO_LIST, &CProcessManagerDlg::OnRclickProcessInfoList)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PROCESS_INFO_LIST, &CProcessManagerDlg::OnCustomdrawProcessInfoList)
+	ON_COMMAND(IDR_PROCESS_MANAGER_DIALOG_MAIN_MENU, &CProcessManagerDlg::OnProcessCreate)
+
+	ON_MESSAGE(UM_OPEN_CREATE_PROCESS_DIALOG, &CProcessManagerDlg::OnOpenProcessCreateDialog)
 END_MESSAGE_MAP()
 
 
@@ -361,4 +364,29 @@ void CProcessManagerDlg::OnCustomdrawProcessInfoList(NMHDR* pNMHDR, LRESULT* pRe
 		pLVCD->clrTextBk = NewBackgroundColor;
 		*pResult = CDRF_DODEFAULT;
 	}
+}
+
+
+void CProcessManagerDlg::OnProcessCreate()
+{
+	// TODO: 在此添加命令处理程序代码
+	//  首先弹出一个二级窗口
+	//OnOpenProcessCreateDialog(0, (LPARAM)m_ContextObject);
+	PostMessage(UM_OPEN_CREATE_PROCESS_DIALOG,0, (LPARAM)m_ContextObject);
+}
+
+LRESULT CProcessManagerDlg::OnOpenProcessCreateDialog(WPARAM ParameterData1, LPARAM ParameterData2)
+{
+
+	PCONTEXT_OBJECT ContextObject = (CONTEXT_OBJECT*)ParameterData2;
+
+	//非阻塞对话框
+	CCreateProcessDlg* Dialog = new CCreateProcessDlg(this, m_IocpServer, ContextObject);
+	m_CreateProcessDlg = Dialog;
+	// 设置父窗口为卓面
+	Dialog->Create(IDD_CREATE_PROCESS_DIALOG, GetDesktopWindow());    //创建非阻塞的Dlg
+	Dialog->ShowWindow(SW_SHOW);
+
+
+	return 0;
 }

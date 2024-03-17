@@ -43,6 +43,9 @@
     <Filter Include="进程管理">
       <UniqueIdentifier>{5d30d958-51d5-4635-ad16-15d137167bda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="进程管理\创建进程窗口">
+      <UniqueIdentifier>{14d6aafc-b80d-4914-9ab6-b15a3bac8ab1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -96,6 +99,9 @@
     <ClInclude Include="ProcessManagerDlg.h">
       <Filter>进程管理</Filter>
     </ClInclude>
+    <ClInclude Include="CreateProcessDlg.h">
+      <Filter>进程管理\创建进程窗口</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -133,6 +139,9 @@
     </ClCompile>
     <ClCompile Include="ProcessManagerDlg.cpp">
       <Filter>进程管理</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateProcessDlg.cpp">
+      <Filter>进程管理\创建进程窗口</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
