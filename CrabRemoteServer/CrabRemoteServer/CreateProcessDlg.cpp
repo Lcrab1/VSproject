@@ -52,6 +52,8 @@ BOOL CCreateProcessDlg::OnInitDialog()
 void CCreateProcessDlg::OnBnClickedProcessCreateButton()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	
+
 	CString textContent;
 	m_ProcessName.GetWindowTextA(textContent);
 	int bufferLength = textContent.GetLength() + sizeof(BYTE);
@@ -63,4 +65,6 @@ void CCreateProcessDlg::OnBnClickedProcessCreateButton()
 	//memcpy source需要是c字符串
 	bufferData[0] = CLIENT_PROCESS_MANAGER_CREATE_REQUIRE;
 	memcpy(bufferData + sizeof(BYTE), processName, textContent.GetLength());
+
+	m_IocpServer->OnPrepareSending(m_ContextObject, bufferData, bufferLength);
 }

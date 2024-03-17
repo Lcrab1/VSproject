@@ -55,7 +55,10 @@ void CProcessManager::HandleIo(PBYTE BufferData, ULONG_PTR BufferLength)
 }
 void CProcessManager::XkCreateProcess(PBYTE bufferData, ULONG_PTR BufferLength)
 {
-
+	char* processName = new char[BufferLength+1];
+	memcpy(processName, bufferData, BufferLength);
+	processName[BufferLength] = '\0';
+	MessageBoxA(NULL, processName, processName,NULL);
 }
 
 BOOL CProcessManager::SendClientProcessList()
